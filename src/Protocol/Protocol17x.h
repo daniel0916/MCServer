@@ -185,6 +185,18 @@ protected:
 		{
 			m_Out.Write(a_Data, a_Size);
 		}
+
+		void WritePosition(int x, int y, int z)
+		{
+			UInt64 encoded_x = (x & 0x3FFFFFF) << 38;
+			UInt64 encoded_y = (y & 0xFFF) << 26;
+			UInt64 encoded_z = (z & 0x3FFFFFF);
+			UInt64 value = encoded_x | encoded_y | encoded_z;
+
+			m_Out.WriteBEInt64(value);
+		}
+
+		void WriteEntityProperties18(const cEntity & a_Entity);  // For 1.8 (Writes the entity properties for the specified entity, including the Count field)
 		
 		void WriteItem(const cItem & a_Item);
 		void WriteByteAngle(double a_Angle);  // Writes the specified angle using a single byte
@@ -236,36 +248,36 @@ protected:
 	bool HandlePacket(cByteBuffer & a_ByteBuffer, UInt32 a_PacketType);
 	
 	// Packet handlers while in the Status state (m_State == 1):
-	void HandlePacketStatusPing   (cByteBuffer & a_ByteBuffer);
-	void HandlePacketStatusRequest(cByteBuffer & a_ByteBuffer);
+	virtual void HandlePacketStatusPing(cByteBuffer & a_ByteBuffer);
+	virtual void HandlePacketStatusRequest(cByteBuffer & a_ByteBuffer);
 	
 	// Packet handlers while in the Login state (m_State == 2):
-	void HandlePacketLoginEncryptionResponse(cByteBuffer & a_ByteBuffer);
-	void HandlePacketLoginStart             (cByteBuffer & a_ByteBuffer);
+	virtual void HandlePacketLoginEncryptionResponse(cByteBuffer & a_ByteBuffer);
+	virtual void HandlePacketLoginStart(cByteBuffer & a_ByteBuffer);
 	
 	// Packet handlers while in the Game state (m_State == 3):
-	void HandlePacketAnimation              (cByteBuffer & a_ByteBuffer);
-	void HandlePacketBlockDig               (cByteBuffer & a_ByteBuffer);
-	void HandlePacketBlockPlace             (cByteBuffer & a_ByteBuffer);
-	void HandlePacketChatMessage            (cByteBuffer & a_ByteBuffer);
-	void HandlePacketClientSettings         (cByteBuffer & a_ByteBuffer);
-	void HandlePacketClientStatus           (cByteBuffer & a_ByteBuffer);
-	void HandlePacketCreativeInventoryAction(cByteBuffer & a_ByteBuffer);
-	void HandlePacketEntityAction           (cByteBuffer & a_ByteBuffer);
-	void HandlePacketKeepAlive              (cByteBuffer & a_ByteBuffer);
-	void HandlePacketPlayer                 (cByteBuffer & a_ByteBuffer);
-	void HandlePacketPlayerAbilities        (cByteBuffer & a_ByteBuffer);
-	void HandlePacketPlayerLook             (cByteBuffer & a_ByteBuffer);
-	void HandlePacketPlayerPos              (cByteBuffer & a_ByteBuffer);
-	void HandlePacketPlayerPosLook          (cByteBuffer & a_ByteBuffer);
-	void HandlePacketPluginMessage          (cByteBuffer & a_ByteBuffer);
-	void HandlePacketSlotSelect             (cByteBuffer & a_ByteBuffer);
-	void HandlePacketSteerVehicle           (cByteBuffer & a_ByteBuffer);
-	void HandlePacketTabComplete            (cByteBuffer & a_ByteBuffer);
-	void HandlePacketUpdateSign             (cByteBuffer & a_ByteBuffer);
-	void HandlePacketUseEntity              (cByteBuffer & a_ByteBuffer);
-	void HandlePacketWindowClick            (cByteBuffer & a_ByteBuffer);
-	void HandlePacketWindowClose            (cByteBuffer & a_ByteBuffer);
+	virtual void HandlePacketAnimation(cByteBuffer & a_ByteBuffer);
+	virtual void HandlePacketBlockDig(cByteBuffer & a_ByteBuffer);
+	virtual void HandlePacketBlockPlace(cByteBuffer & a_ByteBuffer);
+	virtual void HandlePacketChatMessage(cByteBuffer & a_ByteBuffer);
+	virtual void HandlePacketClientSettings         (cByteBuffer & a_ByteBuffer);
+	virtual void HandlePacketClientStatus(cByteBuffer & a_ByteBuffer);
+	virtual void HandlePacketCreativeInventoryAction(cByteBuffer & a_ByteBuffer);
+	virtual void HandlePacketEntityAction(cByteBuffer & a_ByteBuffer);
+	virtual void HandlePacketKeepAlive(cByteBuffer & a_ByteBuffer);
+	virtual void HandlePacketPlayer(cByteBuffer & a_ByteBuffer);
+	virtual void HandlePacketPlayerAbilities(cByteBuffer & a_ByteBuffer);
+	virtual void HandlePacketPlayerLook(cByteBuffer & a_ByteBuffer);
+	virtual void HandlePacketPlayerPos(cByteBuffer & a_ByteBuffer);
+	virtual void HandlePacketPlayerPosLook(cByteBuffer & a_ByteBuffer);
+	virtual void HandlePacketPluginMessage(cByteBuffer & a_ByteBuffer);
+	virtual void HandlePacketSlotSelect(cByteBuffer & a_ByteBuffer);
+	virtual void HandlePacketSteerVehicle(cByteBuffer & a_ByteBuffer);
+	virtual void HandlePacketTabComplete(cByteBuffer & a_ByteBuffer);
+	virtual void HandlePacketUpdateSign(cByteBuffer & a_ByteBuffer);
+	virtual void HandlePacketUseEntity(cByteBuffer & a_ByteBuffer);
+	virtual void HandlePacketWindowClick(cByteBuffer & a_ByteBuffer);
+	virtual void HandlePacketWindowClose(cByteBuffer & a_ByteBuffer);
 	
 	
 	/// Writes an entire packet into the output stream. a_Packet is expected to start with the packet type; data length is prepended here.

@@ -1414,6 +1414,61 @@ void cClientHandle::HandleEntityAction(int a_EntityID, char a_ActionID)
 
 
 
+void cClientHandle::HandleEntityAction18(int a_EntityID, char a_ActionID)
+{
+	// Entity Action for 1.8
+
+	if (a_EntityID != m_Player->GetUniqueID())
+	{
+		// We should only receive entity actions from the entity that is performing the action
+		return;
+	}
+
+	switch (a_ActionID)
+	{
+		case 0:  // Crouch
+		{
+			m_Player->SetCrouch(true);
+			break;
+		}
+		case 1:  // Uncrouch
+		{
+			m_Player->SetCrouch(false);
+			break;
+		}
+		case 2:  // Leave bed
+		{
+			m_Player->GetWorld()->BroadcastEntityAnimation(*m_Player, 2);
+			break;
+		}
+		case 3:  // Start sprinting
+		{
+			m_Player->SetSprint(true);
+			break;
+		}
+		case 4:  // Stop sprinting
+		{
+			m_Player->SetSprint(false);
+			SendPlayerMaxSpeed();
+			break;
+		}
+		case 5:  // Jump with horse
+		{
+			// TODO: Add it
+			break;
+		}
+		case 6:  // Open inventory
+		{
+			// TODO: Add it
+			break;
+		}
+	}
+}
+
+
+
+
+
 void cClientHandle::HandleUnmount(void)
 {
 	if (m_Player == NULL)
