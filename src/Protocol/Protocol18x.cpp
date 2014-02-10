@@ -87,10 +87,9 @@ void cProtocol180::SendWindowOpen(const cWindow & a_Window)
 
 	cPacketizer Pkt(*this, 0x2d);
 	Pkt.WriteChar(a_Window.GetWindowID());
-	Pkt.WriteString(std::to_string(a_Window.GetWindowType()));
-	Pkt.WriteString(a_Window.GetWindowTitle());
+	Pkt.WriteString(cWindow::GetNameFromType(a_Window.GetWindowType()));
+	Pkt.WriteString("{text:\"" + a_Window.GetWindowTitle() + "\"}");
 	Pkt.WriteChar(a_Window.GetNumNonInventorySlots());
-	Pkt.WriteBool(true);
 	if (a_Window.GetWindowType() == cWindow::wtAnimalChest)
 	{
 		Pkt.WriteInt(0);  // TODO: The animal's EntityID
@@ -114,7 +113,7 @@ void cProtocol180::SendPlayerMoveLook(void)
 	Pkt.WriteFloat((float)m_Client->GetPlayer()->GetYaw());
 	Pkt.WriteFloat((float)m_Client->GetPlayer()->GetPitch());
 
-	//Add Flags (currently only x)
+	// TODO: Add Flags (currently only x)
 	Pkt.WriteByte(0x01);
 
 }
@@ -412,6 +411,7 @@ void cProtocol180::SendEntityEffect(const cEntity & a_Entity, int a_EffectID, in
 	Pkt.WriteByte(a_EffectID);
 	Pkt.WriteByte(a_Amplifier);
 	Pkt.WriteVarInt(a_Duration);
+	Pkt.WriteBool(false); // TODO: Add HideParticles Support
 }
 
 
@@ -522,6 +522,49 @@ void cProtocol180::SendPlayerMaxSpeed(void)
 	{
 		Pkt.WriteVarInt(0);  // Modifier count
 	}
+}
+
+
+
+
+
+void cProtocol180::SendPlayerSpawn(const cPlayer & a_Player)
+{
+	// Called to spawn another player for the client
+	cPacketizer Pkt(*this, 0x0c);  // Spawn Player packet
+	Pkt.WriteVarInt(a_Player.GetUniqueID());
+	Pkt.WriteString(Printf("%d", a_Player.GetUniqueID()));  // TODO: Proper UUID
+	Pkt.WriteString(a_Player.GetName());
+
+	if (cRoot::Get()->GetServer()->ShouldAuthenticate())
+	{
+		//AString DataName = "textures";
+		//AString DataValue = "0";
+		//AString DataSignature = "0";
+		//Pkt.WriteVarInt(DataName.length() + DataValue.length() + DataSignature.length());
+		//Pkt.WriteString(DataName);
+		//Pkt.WriteString(DataValue);
+		//Pkt.WriteString(DataSignature);
+		Pkt.WriteVarInt(0);
+	}
+
+	else
+	{
+		Pkt.WriteVarInt(0);
+	}
+
+
+
+	Pkt.WriteFPInt(a_Player.GetPosX());
+	Pkt.WriteFPInt(a_Player.GetPosY());
+	Pkt.WriteFPInt(a_Player.GetPosZ());
+	Pkt.WriteByteAngle(a_Player.GetYaw());
+	Pkt.WriteByteAngle(a_Player.GetPitch());
+	short ItemType = a_Player.GetEquippedItem().IsEmpty() ? 0 : a_Player.GetEquippedItem().m_ItemType;
+	Pkt.WriteShort(ItemType);
+	Pkt.WriteByte((3 << 5) | 6);  // Metadata: float + index 6
+	Pkt.WriteFloat((float)a_Player.GetHealth());
+	Pkt.WriteByte(0x7f);  // Metadata: end
 }
 
 
@@ -654,6 +697,58 @@ void cProtocol180::HandlePacketSteerVehicle(cByteBuffer & a_ByteBuffer)
 	{
 		m_Client->HandleSteerVehicle(Forward, Sideways);
 	}
+}
+
+
+
+
+
+void cProtocol180::HandlePacketPlayerPos(cByteBuffer & a_ByteBuffer)
+{
+	HANDLE_READ(a_ByteBuffer, ReadBEDouble, double, PosX);
+	HANDLE_READ(a_ByteBuffer, ReadBEDouble, double, PosY);
+	HANDLE_READ(a_ByteBuffer, ReadBEDouble, double, PosZ);
+	HANDLE_READ(a_ByteBuffer, ReadBool, bool, IsOnGround);
+	m_Client->HandlePlayerPos(PosX, PosY, PosZ, PosY, IsOnGround);   // Use PosY for Stance
+}
+
+
+
+
+
+void cProtocol180::HandlePacketPlayerPosLook(cByteBuffer & a_ByteBuffer)
+{
+	HANDLE_READ(a_ByteBuffer, ReadBEDouble, double, PosX);
+	HANDLE_READ(a_ByteBuffer, ReadBEDouble, double, PosY);
+	HANDLE_READ(a_ByteBuffer, ReadBEDouble, double, PosZ);
+	HANDLE_READ(a_ByteBuffer, ReadBEFloat, float, Yaw);
+	HANDLE_READ(a_ByteBuffer, ReadBEFloat, float, Pitch);
+	HANDLE_READ(a_ByteBuffer, ReadBool, bool, IsOnGround);
+	m_Client->HandlePlayerMoveLook(PosX, PosY, PosZ, PosY, Yaw, Pitch, IsOnGround);   // Use PosY for Stance
+}
+
+
+
+
+
+void cProtocol180::HandlePacketStatusRequest(cByteBuffer & a_ByteBuffer)
+{
+	// Send the response:
+	AString Response = "{\"version\":{\"name\":\"14w06a\",\"protocol\":10},\"players\":{";
+	AppendPrintf(Response, "\"max\":%u,\"online\":%u,\"sample\":[]},",
+		cRoot::Get()->GetServer()->GetMaxPlayers(),
+		cRoot::Get()->GetServer()->GetNumPlayers()
+		);
+	AppendPrintf(Response, "\"description\":{\"text\":\"%s\"},",
+		cRoot::Get()->GetServer()->GetDescription().c_str()
+		);
+	AppendPrintf(Response, "\"favicon\":\"data:image/png;base64,%s\"",
+		cRoot::Get()->GetServer()->GetFaviconData().c_str()
+		);
+	Response.append("}");
+
+	cPacketizer Pkt(*this, 0x00);  // Response packet
+	Pkt.WriteString(Response);
 }
 
 

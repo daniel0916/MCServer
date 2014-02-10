@@ -165,6 +165,9 @@ public:
 	
 	/// Used by cSlotAreas to send individual slots to clients, a_RelativeSlotNum is the slot number relative to a_SlotArea
 	void SendSlot(cPlayer & a_Player, cSlotArea * a_SlotArea, int a_RelativeSlotNum);
+
+	//Returns the Name from the WindowType (for 1.8 and newer)
+	static AString cWindow::GetNameFromType(int a_Type);
 	
 protected:
 	cSlotAreas m_SlotAreas;

@@ -772,6 +772,28 @@ void cWindow::SetProperty(int a_Property, int a_Value, cPlayer & a_Player)
 
 
 
+AString cWindow::GetNameFromType(int a_Type)
+{
+	switch (a_Type)
+	{
+		case 0: return "minecraft:chest";
+		case 1: return "minecraft:crafting_table";
+		case 2: return "minecraft:furnace";
+		case 3: return "minecraft:dispenser";
+		case 4: return "minecraft:enchanting_table";
+		case 5: return "minecraft:brewing_stand";
+		case 6: return "minecraft:villager";
+		case 7: return "minecraft:beacon";
+		case 8: return "minecraft:anvil";
+		case 9: return "minecraft:hopper";
+		default: ASSERT(!"Invalid WindowType!"); return "";
+	}
+}
+
+
+
+
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cInventoryWindow:
 

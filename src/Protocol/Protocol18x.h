@@ -61,6 +61,7 @@ public:
 	virtual void SendCombat(void);
 	virtual void SendKeepAlive(int a_PingID) override;
 	virtual void SendPlayerMaxSpeed(void) override;
+	virtual void SendPlayerSpawn(const cPlayer & a_Player) override;
 
 protected:
 
@@ -73,6 +74,9 @@ protected:
 	virtual void HandlePacketAnimation(cByteBuffer & a_ByteBuffer) override;
 	virtual void HandlePacketEntityAction(cByteBuffer & a_ByteBuffer) override;
 	virtual void HandlePacketSteerVehicle(cByteBuffer & a_ByteBuffer) override;
+	virtual void HandlePacketPlayerPos(cByteBuffer & a_ByteBuffer) override;
+	virtual void HandlePacketPlayerPosLook(cByteBuffer & a_ByteBuffer) override;
+	virtual void HandlePacketStatusRequest(cByteBuffer & a_ByteBuffer) override;
 
 };
 
