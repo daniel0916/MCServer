@@ -188,11 +188,10 @@ protected:
 
 		void WritePosition(int x, int y, int z)
 		{
-			UInt64 encoded_x = (x & 0x3FFFFFF) << 38;
-			UInt64 encoded_y = (y & 0xFFF) << 26;
-			UInt64 encoded_z = (z & 0x3FFFFFF);
-			UInt64 value = encoded_x | encoded_y | encoded_z;
-
+			UInt64 encoded_x = x & 0x3FFFFFF;
+			UInt64 encoded_y = y & 0xFFF;
+			UInt64 encoded_z = z & 0x3FFFFFF;
+			UInt64 value = (encoded_x << 38) | (encoded_y << 26) | encoded_z;
 			m_Out.WriteBEInt64(value);
 		}
 
