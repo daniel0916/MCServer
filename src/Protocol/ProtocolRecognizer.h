@@ -50,7 +50,7 @@ public:
 
 		// These will be kept "under" the next / latest, because the next and latest are only needed for previous protocols
 		PROTO_VERSION_1_7_2 = 4,
-		PROTO_VERSION_1_8 = 9,
+		PROTO_VERSION_1_8 = 10,
 	} ;
 
 	cProtocolRecognizer(cClientHandle * a_Client);
