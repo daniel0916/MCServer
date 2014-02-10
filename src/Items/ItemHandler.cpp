@@ -311,6 +311,8 @@ char cItemHandler::GetMaxStackSize(void)
 		case E_ITEM_COOKED_PORKCHOP:      return 64;
 		case E_ITEM_COOKIE:               return 64;
 		case E_ITEM_DIAMOND:              return 64;
+		case E_ITEM_WOODEN_DOOR:          return 64;
+		case E_ITEM_IRON_DOOR:            return 64;
 		case E_ITEM_DYE:                  return 64;
 		case E_ITEM_EGG:                  return 16;
 		case E_ITEM_EMERALD:              return 64;

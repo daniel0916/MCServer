@@ -554,6 +554,7 @@ public:
 		// Transparent blocks
 		g_BlockTransparent[E_BLOCK_ACTIVATOR_RAIL]        = true;
 		g_BlockTransparent[E_BLOCK_AIR]                   = true;
+		g_BlockTransparent[E_BLOCK_BARRIER]               = true;
 		g_BlockTransparent[E_BLOCK_BIG_FLOWER]            = true;
 		g_BlockTransparent[E_BLOCK_BROWN_MUSHROOM]        = true;
 		g_BlockTransparent[E_BLOCK_CARROTS]               = true;

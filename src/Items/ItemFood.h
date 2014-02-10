@@ -29,9 +29,9 @@ public:
 		switch(m_ItemType)
 		{
 			// Please keep alpha-sorted.
-			case E_ITEM_BAKED_POTATO:     return FoodInfo(6, 7.2);
+			case E_ITEM_BAKED_POTATO:     return FoodInfo(5, 7.2);
 			case E_ITEM_BREAD:            return FoodInfo(5, 6);
-			case E_ITEM_CARROT:           return FoodInfo(4, 4.8);
+			case E_ITEM_CARROT:           return FoodInfo(3, 4.8);
 			case E_ITEM_COOKED_CHICKEN:   return FoodInfo(6, 7.2);
 			case E_ITEM_COOKED_FISH:      return FoodInfo(5, 6);
 			case E_ITEM_COOKED_PORKCHOP:  return FoodInfo(8, 12.8);
