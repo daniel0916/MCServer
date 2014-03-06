@@ -55,7 +55,7 @@ void cAntiCheat::LoadSettings(void)
 		LOGWARN("Regenerating AntiCheat.ini, all settings will be reset");
 		AntiCheatIniFile.AddHeaderComment(" This is the anticheat configuration");
 		AntiCheatIniFile.AddValueB("Spam-Protection", "Enabled", false);
-		AntiCheatIniFile.AddValueF("Spam-Protection", "Value", 5);
+		AntiCheatIniFile.AddValueF("Spam-Protection", "Value", 7.0);
 		AntiCheatIniFile.AddValueB("Speed", "Enabled", false);
 		AntiCheatIniFile.AddValueB("Spider", "Enabled", false);
 		AntiCheatIniFile.AddValueB("WaterWalking", "Enabled", false);
