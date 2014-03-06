@@ -14,3 +14,7 @@ public:
 	static bool checkXZSpeed(cPlayer & a_Player, double a_DiffX, double a_DiffZ);
 	static void logVelocity(cPlayer & a_Player);
 };
+
+
+
+

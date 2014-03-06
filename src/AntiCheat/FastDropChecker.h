@@ -12,3 +12,7 @@ class cFastDropChecker
 public:
 	static bool Check(cPlayer & a_Player);
 };
+
+
+
+

@@ -12,3 +12,7 @@ class cSpiderChecker
 public:
 	static bool Check(cPlayer & a_Player, double a_DiffY);
 };
+
+
+
+

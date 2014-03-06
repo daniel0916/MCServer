@@ -2071,10 +2071,13 @@ void cClientHandle::SendEntityStatus(const cEntity & a_Entity, char a_Status)
 
 void cClientHandle::SendEntityVelocity(const cEntity & a_Entity)
 {
-	if (a_Entity.IsPlayer())
+	if (cAntiCheat::m_Speed)
 	{
-		cPlayer * Player = (cPlayer *)&a_Entity;
-		cSpeedChecker::logVelocity(*Player);
+		if (a_Entity.IsPlayer())
+		{
+			cPlayer * Player = (cPlayer *)&a_Entity;
+			cSpeedChecker::logVelocity(*Player);
+		}
 	}
 
 	m_Protocol->SendEntityVelocity(a_Entity);
