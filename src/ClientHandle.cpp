@@ -547,10 +547,10 @@ void cClientHandle::HandlePlayerPos(double a_PosX, double a_PosY, double a_PosZ,
 	{
 		return;
 	}
-	if (cSpeedChecker::checkYSpeed(*m_Player, y))
-	{
-		return;
-	}
+	//if (cSpeedChecker::checkYSpeed(*m_Player, y))
+	//{
+		//return;
+	//}
 	if (cSpiderChecker::Check(*m_Player, y))
 	{
 		return;
