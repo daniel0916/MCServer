@@ -1127,10 +1127,10 @@ void cClientHandle::HandleChat(const AString & a_Message)
 	if (cAntiCheat::m_SpamProtection)
 	{
 		m_Player->m_Messages += 1;
-		m_Player->SendMessage("Spam Protection");
 		if (m_Player->m_Messages > cAntiCheat::m_MaxMessages)
 		{
 			m_Player->GetClientHandle()->Kick("Stop Spamming!");
+			cAntiCheat::LOG(m_Player->GetName() + " was kicked for spamming");
 		}
 	}
 	
