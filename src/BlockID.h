@@ -913,6 +913,9 @@ extern bool       g_BlockIsSnowable[256];
 extern bool       g_BlockRequiresSpecialTool[256];
 extern bool       g_BlockIsSolid[256];
 extern bool       g_BlockFullyOccupiesVoxel[256];
+extern bool       g_BlockIsLiquid[256];
+extern bool       g_BlockIsClimbable[256];
+extern bool       g_BlockIsStair[256];
 
 
 

@@ -10,9 +10,10 @@ class cLog
 private:
 	FILE * m_File;
 	static cLog * s_Log;
+	AString m_LogFolder;
 
 public:
-	cLog(const AString & a_FileName);
+	cLog(const AString & a_FileName, const AString & a_FolderName = "logs");
 	~cLog();
 	void Log(const char * a_Format, va_list argList);
 	void Log(const char * a_Format, ...);

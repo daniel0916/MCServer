@@ -17,15 +17,16 @@
 
 cLog* cLog::s_Log = NULL;
 
-cLog::cLog(const AString & a_FileName )
+cLog::cLog(const AString & a_FileName, const AString & a_FolderName)
 	: m_File(NULL)
+	, m_LogFolder(a_FolderName)
 {
 	s_Log = this;
 
 	// create logs directory
-	cFile::CreateFolder(FILE_IO_PREFIX + AString("logs"));
+	cFile::CreateFolder(FILE_IO_PREFIX + AString(m_LogFolder));
 
-	OpenLog((FILE_IO_PREFIX + AString("logs/") + a_FileName).c_str() );
+	OpenLog((FILE_IO_PREFIX + AString(m_LogFolder + "/") + a_FileName).c_str());
 }
 
 

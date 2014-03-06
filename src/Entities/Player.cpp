@@ -18,6 +18,8 @@
 #include "../MersenneTwister.h"
 #include "../Chunk.h"
 #include "../Items/ItemHandler.h"
+#include "AntiCheat/AntiCheat.h"
+#include "AntiCheat/FastDropChecker.h"
 
 #include "../Vector3d.h"
 #include "../Vector3f.h"
@@ -60,6 +62,7 @@ cPlayer::cPlayer(cClientHandle* a_Client, const AString & a_PlayerName)
 	, m_IsSwimming(false)
 	, m_IsSubmerged(false)
 	, m_IsFishing(false)
+	, m_IsSleeping(false)
 	, m_CanFly(false)
 	, m_EatingFinishTick(-1)
 	, m_LifetimeTotalXp(0)
@@ -69,6 +72,18 @@ cPlayer::cPlayer(cClientHandle* a_Client, const AString & a_PlayerName)
 	, m_BowCharge(0)
 	, m_FloaterID(-1)
 	, m_Team(NULL)
+	, m_Messages(0)
+	, m_BlocksDropped(0)
+	, m_BlockTime(0)
+	, m_IsInWater(false)
+	, m_IsInWaterCache(false)
+	, m_WaterSpeedViolation(-1)
+	, m_Velocitized(0)
+	, m_SpeedViolation(0)
+	, m_MovingExempt(0)
+	, m_PlacedBlock(0)
+	, m_BrokenBlock(0)
+	
 {
 	LOGD("Created a player object for \"%s\" @ \"%s\" at %p, ID %d", 
 		a_PlayerName.c_str(), a_Client->GetIPString().c_str(),
@@ -265,6 +280,15 @@ void cPlayer::Tick(float a_Dt, cChunk & a_Chunk)
 	if (IsFlying())
 	{
 		m_LastGroundHeight = (float)GetPosY();
+	}
+
+	// Spam Protection
+	if (cAntiCheat::m_SpamProtection)
+	{
+		if (m_Messages > 0)
+		{
+			m_Messages -= 0.01;
+		}
 	}
 }
 
@@ -1413,6 +1437,11 @@ AString cPlayer::GetColor(void) const
 
 void cPlayer::TossEquippedItem(char a_Amount)
 {
+	if (cFastDropChecker::Check(*this))
+	{
+		return;
+	}
+
 	cItems Drops;
 	cItem DroppedItem(GetInventory().GetEquippedItem());
 	if (!DroppedItem.IsEmpty())
@@ -1441,6 +1470,11 @@ void cPlayer::TossEquippedItem(char a_Amount)
 
 void cPlayer::TossHeldItem(char a_Amount)
 {
+	if (cFastDropChecker::Check(*this))
+	{
+		return;
+	}
+
 	cItems Drops;
 	cItem & Item = GetDraggingItem();
 	if (!Item.IsEmpty())

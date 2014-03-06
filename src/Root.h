@@ -22,6 +22,7 @@ class cWorld;
 class cPlayer;
 class cCommandOutputCallback;
 class cCompositeChat;
+class cAntiCheat;
 
 typedef cItemCallback<cPlayer> cPlayerListCallback;
 typedef cItemCallback<cWorld>  cWorldListCallback;
@@ -174,6 +175,8 @@ private:
 	cHTTPServer        m_HTTPServer;
 
 	cMCLogger *      m_Log;
+
+	cAntiCheat *     m_AntiCheat;
 
 	bool m_bStop;
 	bool m_bRestart;

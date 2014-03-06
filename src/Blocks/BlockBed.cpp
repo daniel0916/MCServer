@@ -62,6 +62,7 @@ void cBlockBedHandler::OnUse(cChunkInterface & a_ChunkInterface, cWorldInterface
 	{
 		if (a_WorldInterface.GetTimeOfDay() > 13000)
 		{
+			a_Player->SetIsSleeping(true);
 			NIBBLETYPE Meta = a_ChunkInterface.GetBlockMeta(a_BlockX, a_BlockY, a_BlockZ);
 			if (Meta & 0x8)
 			{

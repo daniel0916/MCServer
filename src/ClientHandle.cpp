@@ -33,6 +33,13 @@
 #include "Protocol/ProtocolRecognizer.h"
 #include "CompositeChat.h"
 
+#include "AntiCheat/AntiCheat.h"
+#include "AntiCheat/FastDropChecker.h"
+#include "AntiCheat/SpeedChecker.h"
+#include "AntiCheat/SpiderChecker.h"
+#include "AntiCheat/VClipChecker.h"
+#include "AntiCheat/WaterWalkingChecker.h"
+
 
 
 
@@ -530,6 +537,33 @@ void cClientHandle::HandlePlayerPos(double a_PosX, double a_PosY, double a_PosZ,
 			m_Player->AddFoodExhaustion(m_Player->IsSprinting() ? 0.8 : 0.2);
 		}
 	}
+
+	// AntiCheat Checks
+	double x = std::abs(a_PosX - m_Player->GetPosX());
+	double y = std::abs(a_PosY - m_Player->GetPosY());
+	double z = std::abs(a_PosZ - m_Player->GetPosZ());
+
+	if (cSpeedChecker::checkXZSpeed(*m_Player, x, z))
+	{
+		return;
+	}
+	if (cSpeedChecker::checkYSpeed(*m_Player, y))
+	{
+		return;
+	}
+	if (cSpiderChecker::Check(*m_Player, y))
+	{
+		return;
+	}
+	if (cVClipChecker::Check(*m_Player, a_PosY, y))
+	{
+		return;
+	}
+	if (cWaterWalkingChecker::Check(*m_Player, x, y, z))
+	{
+		return;
+	}
+
 	
 	m_Player->MoveTo(Pos);
 	m_Player->SetStance(a_Stance);
@@ -1088,6 +1122,17 @@ void cClientHandle::HandleChat(const AString & a_Message)
 	{
 		return;
 	}
+
+	// Spam Protection
+	if (cAntiCheat::m_SpamProtection)
+	{
+		m_Player->m_Messages += 1;
+		m_Player->SendMessage("Spam Protection");
+		if (m_Player->m_Messages > cAntiCheat::m_MaxMessages)
+		{
+			m_Player->GetClientHandle()->Kick("Stop Spamming!");
+		}
+	}
 	
 	// Not a command, broadcast as a message:
 	cCompositeChat Msg;
@@ -1171,6 +1216,10 @@ void cClientHandle::HandleAnimation(char a_Animation)
 		case 0: // No animation - wiki.vg doesn't say that client has something specific for it, so I suppose it will just become -1
 		case 1:
 		case 2:
+		{
+			m_Player->SetIsSleeping(false);
+			break;
+		}
 		case 3:
 		{
 			a_Animation--; // Offset by -1
@@ -2022,6 +2071,12 @@ void cClientHandle::SendEntityStatus(const cEntity & a_Entity, char a_Status)
 
 void cClientHandle::SendEntityVelocity(const cEntity & a_Entity)
 {
+	if (a_Entity.IsPlayer())
+	{
+		cPlayer * Player = (cPlayer *)&a_Entity;
+		cSpeedChecker::logVelocity(*Player);
+	}
+
 	m_Protocol->SendEntityVelocity(a_Entity);
 }
 

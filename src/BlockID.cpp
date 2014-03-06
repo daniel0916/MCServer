@@ -21,6 +21,9 @@ bool       g_BlockIsSnowable[256];
 bool       g_BlockRequiresSpecialTool[256];
 bool       g_BlockIsSolid[256];
 bool       g_BlockFullyOccupiesVoxel[256];
+bool       g_BlockIsLiquid[256];
+bool       g_BlockIsClimbable[256];
+bool       g_BlockIsStair[256];
 
 
 
@@ -856,6 +859,30 @@ public:
 		g_BlockFullyOccupiesVoxel[E_BLOCK_WOOL]                  = true;
 		g_BlockFullyOccupiesVoxel[E_BLOCK_STONE]                 = true;
 		g_BlockFullyOccupiesVoxel[E_BLOCK_STONE_BRICKS]          = true;
+
+		// Liquid blocks:
+		g_BlockIsLiquid[E_BLOCK_WATER]            = true;
+		g_BlockIsLiquid[E_BLOCK_STATIONARY_WATER] = true;
+		g_BlockIsLiquid[E_BLOCK_LAVA]             = true;
+		g_BlockIsLiquid[E_BLOCK_STATIONARY_LAVA]  = true;
+
+		// Climbable blocks:
+		g_BlockIsClimbable[E_BLOCK_VINES]  = true;
+		g_BlockIsClimbable[E_BLOCK_LADDER] = true;
+
+		// Stairs:
+		g_BlockIsStair[E_BLOCK_WOODEN_STAIRS]        = true;
+		g_BlockIsStair[E_BLOCK_COBBLESTONE_STAIRS]   = true;
+		g_BlockIsStair[E_BLOCK_BRICK_STAIRS]         = true;
+		g_BlockIsStair[E_BLOCK_STONE_BRICK_STAIRS]   = true;
+		g_BlockIsStair[E_BLOCK_NETHER_BRICK_STAIRS]  = true;
+		g_BlockIsStair[E_BLOCK_SANDSTONE_STAIRS]     = true;
+		g_BlockIsStair[E_BLOCK_SPRUCE_WOOD_STAIRS]   = true;
+		g_BlockIsStair[E_BLOCK_BIRCH_WOOD_STAIRS]    = true;
+		g_BlockIsStair[E_BLOCK_JUNGLE_WOOD_STAIRS]   = true;
+		g_BlockIsStair[E_BLOCK_QUARTZ_STAIRS]        = true;
+		g_BlockIsStair[E_BLOCK_ACACIA_WOOD_STAIRS]   = true;
+		g_BlockIsStair[E_BLOCK_DARK_OAK_WOOD_STAIRS] = true;
 	}
 } BlockPropertiesInitializer;
 

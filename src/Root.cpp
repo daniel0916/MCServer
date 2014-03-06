@@ -18,6 +18,7 @@
 #include "CommandOutput.h"
 #include "DeadlockDetect.h"
 #include "OSSupport/Timer.h"
+#include "AntiCheat/AntiCheat.h"
 
 #include "inifile/iniFile.h"
 
@@ -146,6 +147,10 @@ void cRoot::Start(void)
 			LOGINFO("Primary server version set explicitly to %d.", m_PrimaryServerVersion);
 		}
 
+		LOG("Loading AntiCheat...");
+		m_AntiCheat = new cAntiCheat();
+		m_AntiCheat->LoadSettings();
+
 		LOG("Starting server...");
 		if (!m_Server->InitServer(IniFile))
 		{
@@ -238,6 +243,8 @@ void cRoot::Start(void)
 		delete m_CraftingRecipes; m_CraftingRecipes = NULL;
 		LOGD("Forgetting groups...");
 		delete m_GroupManager; m_GroupManager = NULL;
+		LOGD("Unloading AntiCheat...");
+		delete m_AntiCheat;
 		LOGD("Unloading worlds...");
 		UnloadWorlds();
 		

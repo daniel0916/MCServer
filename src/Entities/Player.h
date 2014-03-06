@@ -282,6 +282,13 @@ public:
 
 	int GetFloaterID(void) const { return m_FloaterID; }
 
+	/// returns true if the players is in a vehicle
+	bool IsInVehicle(void) { return m_AttachedTo != NULL; }
+	
+	/// returns true if the player is sleeping
+	bool IsSleeping(void) { return m_IsSleeping; }
+	void SetIsSleeping(bool a_IsSleeping) { m_IsSleeping = a_IsSleeping; }
+
 	// tolua_end
 	
 	/// Starts eating the currently equipped item. Resets the eating timer and sends the proper animation packet
@@ -360,6 +367,31 @@ public:
 	/// Returns wheter the player can fly or not.
 	virtual bool CanFly(void) const { return m_CanFly; }
 	// tolua_end
+
+	/// Values for Spam Protection
+	double m_Messages;
+
+	/// Values for AntiCheat
+	// FastDropChecker:
+	int m_BlocksDropped;
+	time_t m_BlockTime;
+
+	// WaterWalkingChecker:
+	int m_WaterSpeedViolation;
+	bool m_IsInWater;
+	bool m_IsInWaterCache;
+
+	// SpeedChecker:
+	time_t m_Velocitized;
+	int m_SpeedViolation;
+
+	// cAntiCheat::isMovingExempt Method
+	time_t m_MovingExempt;
+	// cAntiCheat::justPlaced Method
+	time_t m_PlacedBlock;
+	// cAntiCheat::justBroke Method
+	time_t m_BrokenBlock;
+
 
 	// cEntity overrides:
 	virtual bool IsCrouched (void) const { return m_IsCrouched; }
@@ -447,6 +479,7 @@ protected:
 	bool m_IsSwimming;
 	bool m_IsSubmerged;
 	bool m_IsFishing;
+	bool m_IsSleeping;
 
 	bool m_CanFly;  // If this is true the player can fly. Even if he is not in creative.
 
