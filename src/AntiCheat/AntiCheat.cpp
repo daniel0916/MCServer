@@ -241,7 +241,7 @@ double cAntiCheat::fixXAxis(double a_X)
 	if (rem < 0.30)
 	{
 		int floor = (int)a_X;
-		touchedX = (floor == a_X ? floor : floor + (int)(doubleToRawLongBits(a_X) ^ (long)((ULONG)0xFFFFFFFF >> 63))) -1;
+		touchedX = (floor == a_X ? floor : floor - (int)(doubleToRawLongBits(a_X) >> 63)) - 1;
 	}
 	return touchedX;
 }
