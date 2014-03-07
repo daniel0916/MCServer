@@ -85,7 +85,8 @@ void cAntiCheat::LoadSettings(void)
 
 void cAntiCheat::LOG(AString Message)
 {
-	m_Log->Log(Message.c_str());
+	AString Message_new = Message + "\n";
+	m_Log->Log(Message_new.c_str());
 }
 
 
