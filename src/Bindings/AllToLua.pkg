@@ -26,6 +26,7 @@ $cfile "WebPlugin.h"
 $cfile "LuaWindow.h"
 
 $cfile "../BlockID.h"
+$cfile "../BlockInfo.h"
 $cfile "../StringUtils.h"
 $cfile "../Defines.h"
 $cfile "../ChatColor.h"
@@ -48,6 +49,7 @@ $cfile "../ItemGrid.h"
 $cfile "../BlockEntities/BlockEntity.h"
 $cfile "../BlockEntities/BlockEntityWithItems.h"
 $cfile "../BlockEntities/ChestEntity.h"
+$cfile "../BlockEntities/CommandBlockEntity.h"
 $cfile "../BlockEntities/DropSpenserEntity.h"
 $cfile "../BlockEntities/DispenserEntity.h"
 $cfile "../BlockEntities/DropperEntity.h"
@@ -56,6 +58,8 @@ $cfile "../BlockEntities/HopperEntity.h"
 $cfile "../BlockEntities/JukeboxEntity.h"
 $cfile "../BlockEntities/NoteEntity.h"
 $cfile "../BlockEntities/SignEntity.h"
+$cfile "../BlockEntities/MobHeadEntity.h"
+$cfile "../BlockEntities/FlowerPotEntity.h"
 $cfile "../WebAdmin.h"
 $cfile "../Root.h"
 $cfile "../Vector3f.h"
@@ -72,6 +76,9 @@ $cfile "../CraftingRecipes.h"
 $cfile "../UI/Window.h"
 $cfile "../Mobs/Monster.h"
 $cfile "../CompositeChat.h"
+$cfile "../Map.h"
+$cfile "../MapManager.h"
+$cfile "../Scoreboard.h"
 
 
 
@@ -80,6 +87,13 @@ $cfile "../CompositeChat.h"
 // Need to declare this class so that the usertype is properly registered in Bindings.cpp - 
 // it seems impossible to register a usertype in ManualBindings.cpp
 class cLineBlockTracer;
+
+
+
+
+
+// To avoid tolua treating Byte as a class, and avoid the need to $cfile entire Globals.h:
+typedef unsigned char Byte;
 
 
 

@@ -43,7 +43,7 @@ cLog::~cLog()
 
 
 
-cLog* cLog::GetInstance()
+cLog * cLog::GetInstance()
 {
 	if (s_Log != NULL)
 	{
@@ -93,7 +93,7 @@ void cLog::ClearLog()
 	if( m_File )
 		fclose (m_File);
 	#endif
-	m_File = 0;
+	m_File = NULL;
 }
 
 

@@ -82,7 +82,11 @@ protected:
 		cLightingChunkStay(cLightingThread & a_LightingThread, int a_ChunkX, int a_ChunkZ, cChunkCoordCallback * a_CallbackAfter);
 		
 	protected:
-		virtual void OnChunkAvailable(int a_ChunkX, int a_ChunkZ) override {}
+		virtual void OnChunkAvailable(int a_ChunkX, int a_ChunkZ) override 
+		{
+			UNUSED(a_ChunkX);
+			UNUSED(a_ChunkZ);
+		}
 		virtual bool OnAllChunksAvailable(void) override;
 		virtual void OnDisabled(void) override;
 	} ;
@@ -165,13 +169,13 @@ protected:
 		ASSERT(a_DstIdx >= 0);
 		ASSERT(a_DstIdx < (int)ARRAYCOUNT(m_BlockTypes));
 		
-		if (a_Light[a_SrcIdx] <= a_Light[a_DstIdx] + g_BlockSpreadLightFalloff[m_BlockTypes[a_DstIdx]])
+		if (a_Light[a_SrcIdx] <= a_Light[a_DstIdx] + cBlockInfo::GetSpreadLightFalloff(m_BlockTypes[a_DstIdx]))
 		{
 			// We're not offering more light than the dest block already has
 			return;
 		}
 
-		a_Light[a_DstIdx] = a_Light[a_SrcIdx] - g_BlockSpreadLightFalloff[m_BlockTypes[a_DstIdx]];
+		a_Light[a_DstIdx] = a_Light[a_SrcIdx] - cBlockInfo::GetSpreadLightFalloff(m_BlockTypes[a_DstIdx]);
 		if (!a_IsSeedOut[a_DstIdx])
 		{
 			a_IsSeedOut[a_DstIdx] = true;

@@ -25,6 +25,8 @@ class cDropSpenserEntity;
 class cFurnaceEntity;
 class cNoteEntity;
 class cCommandBlockEntity;
+class cMobHeadEntity;
+class cFlowerPotEntity;
 class cPawn;
 class cPickup;
 class cChunkDataSerializer;
@@ -40,9 +42,11 @@ typedef cItemCallback<cChestEntity>        cChestCallback;
 typedef cItemCallback<cDispenserEntity>    cDispenserCallback;
 typedef cItemCallback<cDropperEntity>      cDropperCallback;
 typedef cItemCallback<cDropSpenserEntity>  cDropSpenserCallback;
+typedef cItemCallback<cFlowerPotEntity>    cFlowerPotCallback;
 typedef cItemCallback<cFurnaceEntity>      cFurnaceCallback;
 typedef cItemCallback<cNoteEntity>         cNoteBlockCallback;
 typedef cItemCallback<cCommandBlockEntity> cCommandBlockCallback;
+typedef cItemCallback<cMobHeadEntity>      cMobHeadCallback;
 typedef cItemCallback<cChunk>              cChunkCallback;
 
 
@@ -253,6 +257,12 @@ public:
 
 	/** Calls the callback for the command block at the specified coords; returns false if there's no command block at those coords or callback returns true, returns true if found */
 	bool DoWithCommandBlockAt(int a_BlockX, int a_BlockY, int a_BlockZ, cCommandBlockCallback & a_Callback);  // Lua-accessible
+
+	/** Calls the callback for the mob head block at the specified coords; returns false if there's no mob head block at those coords or callback returns true, returns true if found */
+	bool DoWithMobHeadAt(int a_BlockX, int a_BlockY, int a_BlockZ, cMobHeadCallback & a_Callback);  // Lua-accessible
+
+	/** Calls the callback for the flower pot at the specified coords; returns false if there's no flower pot at those coords or callback returns true, returns true if found */
+	bool DoWithFlowerPotAt(int a_BlockX, int a_BlockY, int a_BlockZ, cFlowerPotCallback & a_Callback);  // Lua-accessible
 
 	/** Retrieves the test on the sign at the specified coords; returns false if there's no sign at those coords, true if found */
 	bool GetSignLines (int a_BlockX, int a_BlockY, int a_BlockZ, AString & a_Line1, AString & a_Line2, AString & a_Line3, AString & a_Line4);  // Lua-accessible

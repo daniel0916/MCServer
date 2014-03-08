@@ -19,6 +19,8 @@
 #include "../BlockEntities/JukeboxEntity.h"
 #include "../BlockEntities/NoteEntity.h"
 #include "../BlockEntities/SignEntity.h"
+#include "../BlockEntities/MobHeadEntity.h"
+#include "../BlockEntities/FlowerPotEntity.h"
 
 #include "../Entities/Entity.h"
 #include "../Entities/FallingBlock.h"
@@ -248,11 +250,38 @@ void cNBTChunkSerializer::AddCommandBlockEntity(cCommandBlockEntity * a_CmdBlock
 void cNBTChunkSerializer::AddSignEntity(cSignEntity * a_Sign)
 {
 	m_Writer.BeginCompound("");
-	AddBasicTileEntity(a_Sign, "Sign");
-	m_Writer.AddString("Text1",   a_Sign->GetLine(0));
-	m_Writer.AddString("Text2",   a_Sign->GetLine(1));
-	m_Writer.AddString("Text3",   a_Sign->GetLine(2));
-	m_Writer.AddString("Text4",   a_Sign->GetLine(3));
+		AddBasicTileEntity(a_Sign, "Sign");
+		m_Writer.AddString("Text1",   a_Sign->GetLine(0));
+		m_Writer.AddString("Text2",   a_Sign->GetLine(1));
+		m_Writer.AddString("Text3",   a_Sign->GetLine(2));
+		m_Writer.AddString("Text4",   a_Sign->GetLine(3));
+	m_Writer.EndCompound();
+}
+
+
+
+
+
+void cNBTChunkSerializer::AddMobHeadEntity(cMobHeadEntity * a_MobHead)
+{
+	m_Writer.BeginCompound("");
+		AddBasicTileEntity(a_MobHead, "Skull");
+		m_Writer.AddByte  ("SkullType", a_MobHead->GetType() & 0xFF);
+		m_Writer.AddByte  ("Rot",       a_MobHead->GetRotation() & 0xFF);
+		m_Writer.AddString("ExtraType", a_MobHead->GetOwner());
+	m_Writer.EndCompound();
+}
+
+
+
+
+
+void cNBTChunkSerializer::AddFlowerPotEntity(cFlowerPotEntity * a_FlowerPot)
+{
+	m_Writer.BeginCompound("");
+		AddBasicTileEntity(a_FlowerPot, "FlowerPot");
+		m_Writer.AddInt   ("Item", (Int32) a_FlowerPot->GetItem().m_ItemType);
+		m_Writer.AddInt   ("Data", (Int32) a_FlowerPot->GetItem().m_ItemDamage);
 	m_Writer.EndCompound();
 }
 
@@ -394,6 +423,14 @@ void cNBTChunkSerializer::AddMonsterEntity(cMonster * a_Monster)
 
 	m_Writer.BeginCompound("");
 		AddBasicEntity(a_Monster, EntityClass);
+		m_Writer.BeginList("DropChances", TAG_Float);
+			m_Writer.AddFloat("", a_Monster->GetDropChanceWeapon());
+			m_Writer.AddFloat("", a_Monster->GetDropChanceHelmet());
+			m_Writer.AddFloat("", a_Monster->GetDropChanceChestplate());
+			m_Writer.AddFloat("", a_Monster->GetDropChanceLeggings());
+			m_Writer.AddFloat("", a_Monster->GetDropChanceBoots());
+		m_Writer.EndList();
+		m_Writer.AddByte("CanPickUpLoot", (char)a_Monster->CanPickUpLoot());
 		switch (a_Monster->GetMobType())
 		{
 			case cMonster::mtBat:
@@ -664,10 +701,12 @@ void cNBTChunkSerializer::BlockEntity(cBlockEntity * a_Entity)
 		case E_BLOCK_CHEST:         AddChestEntity       ((cChestEntity *)        a_Entity); break;
 		case E_BLOCK_DISPENSER:     AddDispenserEntity   ((cDispenserEntity *)    a_Entity); break;
 		case E_BLOCK_DROPPER:       AddDropperEntity     ((cDropperEntity *)      a_Entity); break;
+		case E_BLOCK_FLOWER_POT:    AddFlowerPotEntity   ((cFlowerPotEntity *)    a_Entity); break;
 		case E_BLOCK_FURNACE:       AddFurnaceEntity     ((cFurnaceEntity *)      a_Entity); break;
 		case E_BLOCK_HOPPER:        AddHopperEntity      ((cHopperEntity *)       a_Entity); break;
 		case E_BLOCK_SIGN_POST:
 		case E_BLOCK_WALLSIGN:      AddSignEntity        ((cSignEntity *)         a_Entity); break;
+		case E_BLOCK_HEAD:          AddMobHeadEntity     ((cMobHeadEntity *)      a_Entity); break;
 		case E_BLOCK_NOTE_BLOCK:    AddNoteEntity        ((cNoteEntity *)         a_Entity); break;
 		case E_BLOCK_JUKEBOX:       AddJukeboxEntity     ((cJukeboxEntity *)      a_Entity); break;
 		case E_BLOCK_COMMAND_BLOCK: AddCommandBlockEntity((cCommandBlockEntity *) a_Entity); break;

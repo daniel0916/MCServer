@@ -14,6 +14,7 @@ extern "C"
 #include "tolua++/include/tolua++.h"
 #include "Bindings.h"
 #include "ManualBindings.h"
+#include "DeprecatedBindings.h"
 
 // fwd: SQLite/lsqlite3.c
 extern "C"
@@ -95,6 +96,7 @@ void cLuaState::Create(void)
 	luaL_openlibs(m_LuaState);
 	tolua_AllToLua_open(m_LuaState);
 	ManualBindings::Bind(m_LuaState);
+	DeprecatedBindings::Bind(m_LuaState);
 	luaopen_lsqlite3(m_LuaState);
 	luaopen_lxp(m_LuaState);
 	m_IsOwned = true;
@@ -677,6 +679,11 @@ void cLuaState::Push(void * a_Ptr)
 {
 	ASSERT(IsValid());
 
+	// Investigate the cause of this - what is the callstack?
+	LOGWARNING("Lua engine encountered an error - attempting to push a plain pointer");
+	LogStackTrace();
+	ASSERT(!"A plain pointer should never be pushed on Lua stack");
+	
 	lua_pushnil(m_LuaState);
 	m_NumCurrentFunctionArgs += 1;
 }
@@ -709,7 +716,7 @@ void cLuaState::Push(cBlockEntity * a_BlockEntity)
 
 
 
-void cLuaState::GetReturn(int a_StackPos, bool & a_ReturnedVal)
+void cLuaState::GetStackValue(int a_StackPos, bool & a_ReturnedVal)
 {
 	a_ReturnedVal = (tolua_toboolean(m_LuaState, a_StackPos, a_ReturnedVal ? 1 : 0) > 0);
 }
@@ -718,11 +725,17 @@ void cLuaState::GetReturn(int a_StackPos, bool & a_ReturnedVal)
 
 
 
-void cLuaState::GetReturn(int a_StackPos, AString & a_ReturnedVal)
+void cLuaState::GetStackValue(int a_StackPos, AString & a_Value)
 {
-	if (lua_isstring(m_LuaState, a_StackPos))
+	size_t len = 0;
+	const char * data = lua_tolstring(m_LuaState, a_StackPos, &len);
+	if (data != NULL)
 	{
-		a_ReturnedVal = tolua_tocppstring(m_LuaState, a_StackPos, a_ReturnedVal.c_str());
+		a_Value.assign(data, len);
+	}
+	else
+	{
+		a_Value.clear();
 	}
 }
 
@@ -730,7 +743,7 @@ void cLuaState::GetReturn(int a_StackPos, AString & a_ReturnedVal)
 
 
 
-void cLuaState::GetReturn(int a_StackPos, int & a_ReturnedVal)
+void cLuaState::GetStackValue(int a_StackPos, int & a_ReturnedVal)
 {
 	if (lua_isnumber(m_LuaState, a_StackPos))
 	{
@@ -742,7 +755,7 @@ void cLuaState::GetReturn(int a_StackPos, int & a_ReturnedVal)
 
 
 
-void cLuaState::GetReturn(int a_StackPos, double & a_ReturnedVal)
+void cLuaState::GetStackValue(int a_StackPos, double & a_ReturnedVal)
 {
 	if (lua_isnumber(m_LuaState, a_StackPos))
 	{
@@ -1265,6 +1278,8 @@ void cLuaState::LogStack(const char * a_Header)
 
 void cLuaState::LogStack(lua_State * a_LuaState, const char * a_Header)
 {
+	UNUSED(a_Header);  // The param seems unused when compiling for release, so the compiler warns
+	
 	LOGD((a_Header != NULL) ? a_Header : "Lua C API Stack contents:");
 	for (int i = lua_gettop(a_LuaState); i > 0; i--)
 	{

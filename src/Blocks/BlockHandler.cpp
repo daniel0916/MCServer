@@ -34,10 +34,12 @@
 #include "BlockGlass.h"
 #include "BlockGlowstone.h"
 #include "BlockGravel.h"
+#include "BlockMobHead.h"
 #include "BlockHopper.h"
 #include "BlockIce.h"
 #include "BlockLadder.h"
 #include "BlockLeaves.h"
+#include "BlockNewLeaves.h"
 #include "BlockLever.h"
 #include "BlockMelon.h"
 #include "BlockMushroom.h"
@@ -55,6 +57,7 @@
 #include "BlockRedstoneLamp.h"
 #include "BlockRedstoneRepeater.h"
 #include "BlockRedstoneTorch.h"
+#include "BlockTNT.h"
 #include "BlockSand.h"
 #include "BlockSapling.h"
 #include "BlockSideways.h"
@@ -75,38 +78,12 @@
 
 
 
-bool            cBlockHandler::m_HandlerInitialized = false;
-cBlockHandler * cBlockHandler::m_BlockHandler[256];
-
-
-
-
-
-cBlockHandler * cBlockHandler::GetBlockHandler(BLOCKTYPE a_BlockType)
-{
-	if (!m_HandlerInitialized)
-	{
-		// We have to initialize
-		memset(m_BlockHandler, 0, sizeof(m_BlockHandler));
-		m_HandlerInitialized = true;
-	}
-	if (m_BlockHandler[a_BlockType] != NULL)
-	{
-		return m_BlockHandler[a_BlockType];
-	}
-
-	return m_BlockHandler[a_BlockType] = CreateBlockHandler(a_BlockType);
-}
-
-
-
-
-
 cBlockHandler * cBlockHandler::CreateBlockHandler(BLOCKTYPE a_BlockType)
 {
 	switch(a_BlockType)
 	{
 		// Block handlers, alphabetically sorted:
+		case E_BLOCK_ACACIA_WOOD_STAIRS:    return new cBlockStairsHandler          (a_BlockType);
 		case E_BLOCK_ACTIVATOR_RAIL:        return new cBlockRailHandler            (a_BlockType);
 		case E_BLOCK_BED:                   return new cBlockBedHandler             (a_BlockType);
 		case E_BLOCK_BIRCH_WOOD_STAIRS:     return new cBlockStairsHandler          (a_BlockType);
@@ -125,6 +102,7 @@ cBlockHandler * cBlockHandler::CreateBlockHandler(BLOCKTYPE a_BlockType)
 		case E_BLOCK_COBBLESTONE_STAIRS:    return new cBlockStairsHandler          (a_BlockType);
 		case E_BLOCK_COBWEB:                return new cBlockCobWebHandler          (a_BlockType);
 		case E_BLOCK_CROPS:                 return new cBlockCropsHandler           (a_BlockType);
+		case E_BLOCK_DARK_OAK_WOOD_STAIRS:  return new cBlockStairsHandler          (a_BlockType);
 		case E_BLOCK_DEAD_BUSH:             return new cBlockDeadBushHandler        (a_BlockType);
 		case E_BLOCK_DETECTOR_RAIL:         return new cBlockRailHandler            (a_BlockType);
 		case E_BLOCK_DIAMOND_ORE:           return new cBlockOreHandler             (a_BlockType);
@@ -146,6 +124,7 @@ cBlockHandler * cBlockHandler::CreateBlockHandler(BLOCKTYPE a_BlockType)
 		case E_BLOCK_GRASS:                 return new cBlockDirtHandler            (a_BlockType);
 		case E_BLOCK_GRAVEL:                return new cBlockGravelHandler          (a_BlockType);
 		case E_BLOCK_HAY_BALE:              return new cBlockSidewaysHandler        (a_BlockType);
+		case E_BLOCK_HEAD:                  return new cBlockMobHeadHandler         (a_BlockType);
 		case E_BLOCK_HOPPER:                return new cBlockHopperHandler          (a_BlockType);
 		case E_BLOCK_ICE:                   return new cBlockIceHandler             (a_BlockType);
 		case E_BLOCK_INACTIVE_COMPARATOR:   return new cBlockComparatorHandler      (a_BlockType);
@@ -167,6 +146,8 @@ cBlockHandler * cBlockHandler::CreateBlockHandler(BLOCKTYPE a_BlockType)
 		case E_BLOCK_NETHER_BRICK_STAIRS:   return new cBlockStairsHandler          (a_BlockType);
 		case E_BLOCK_NETHER_PORTAL:         return new cBlockPortalHandler          (a_BlockType);
 		case E_BLOCK_NETHER_WART:           return new cBlockNetherWartHandler      (a_BlockType);
+		case E_BLOCK_NETHER_QUARTZ_ORE:     return new cBlockOreHandler             (a_BlockType);
+		case E_BLOCK_NEW_LEAVES:            return new cBlockNewLeavesHandler       (a_BlockType);
 		case E_BLOCK_NEW_LOG:               return new cBlockSidewaysHandler        (a_BlockType);
 		case E_BLOCK_NOTE_BLOCK:            return new cBlockNoteHandler            (a_BlockType);
 		case E_BLOCK_PISTON:                return new cBlockPistonHandler          (a_BlockType);
@@ -186,7 +167,7 @@ cBlockHandler * cBlockHandler::CreateBlockHandler(BLOCKTYPE a_BlockType)
 		case E_BLOCK_REDSTONE_REPEATER_ON:  return new cBlockRedstoneRepeaterHandler(a_BlockType);
 		case E_BLOCK_REDSTONE_TORCH_OFF:    return new cBlockRedstoneTorchHandler   (a_BlockType);
 		case E_BLOCK_REDSTONE_TORCH_ON:     return new cBlockRedstoneTorchHandler   (a_BlockType);
-		case E_BLOCK_REDSTONE_WIRE:	        return new cBlockRedstoneHandler        (a_BlockType);
+		case E_BLOCK_REDSTONE_WIRE:         return new cBlockRedstoneHandler        (a_BlockType);
 		case E_BLOCK_RED_MUSHROOM:          return new cBlockMushroomHandler        (a_BlockType);
 		case E_BLOCK_RED_ROSE:              return new cBlockFlowerHandler          (a_BlockType);
 		case E_BLOCK_SAND:                  return new cBlockSandHandler            (a_BlockType);
@@ -206,6 +187,7 @@ cBlockHandler * cBlockHandler::CreateBlockHandler(BLOCKTYPE a_BlockType)
 		case E_BLOCK_TALL_GRASS:            return new cBlockTallGrassHandler       (a_BlockType);
 		case E_BLOCK_TORCH:                 return new cBlockTorchHandler           (a_BlockType);
 		case E_BLOCK_TRAPDOOR:              return new cBlockTrapdoorHandler        (a_BlockType);
+		case E_BLOCK_TNT:                   return new cBlockTNTHandler             (a_BlockType);
 		case E_BLOCK_VINES:                 return new cBlockVineHandler            (a_BlockType);
 		case E_BLOCK_WALLSIGN:              return new cBlockSignHandler            (a_BlockType);
 		case E_BLOCK_WATER:                 return new cBlockFluidHandler           (a_BlockType);
@@ -219,20 +201,6 @@ cBlockHandler * cBlockHandler::CreateBlockHandler(BLOCKTYPE a_BlockType)
 			
 		default: return new cBlockHandler(a_BlockType);
 	}
-}
-
-
-
-
-
-void cBlockHandler::Deinit()
-{
-	for (int i = 0; i < 256; i++)
-	{
-		delete m_BlockHandler[i];
-	}
-	memset(m_BlockHandler, 0, sizeof(m_BlockHandler));  // Don't leave any dangling pointers around, just in case
-	m_HandlerInitialized = false;
 }
 
 
@@ -323,7 +291,7 @@ void cBlockHandler::NeighborChanged(cChunkInterface & a_ChunkInterface, int a_Bl
 {
 	if ((a_BlockY >= 0) && (a_BlockY < cChunkDef::Height))
 	{
-		GetBlockHandler(a_ChunkInterface.GetBlock(a_BlockX, a_BlockY, a_BlockZ))->OnNeighborChanged(a_ChunkInterface, a_BlockX, a_BlockY, a_BlockZ);
+		cBlockInfo::GetHandler(a_ChunkInterface.GetBlock(a_BlockX, a_BlockY, a_BlockZ))->OnNeighborChanged(a_ChunkInterface, a_BlockX, a_BlockY, a_BlockZ);
 	}
 }
 
@@ -348,6 +316,14 @@ void cBlockHandler::OnDigging(cChunkInterface & a_ChunkInterface, cWorldInterfac
 
 
 void cBlockHandler::OnUse(cChunkInterface & a_ChunkInterface, cWorldInterface & a_WorldInterface, cPlayer *a_Player, int a_BlockX, int a_BlockY, int a_BlockZ, eBlockFace a_BlockFace, int a_CursorX, int a_CursorY, int a_CursorZ)
+{
+}
+
+
+
+
+
+void cBlockHandler::OnCancelRightClick(cChunkInterface & a_ChunkInterface, cWorldInterface & a_WorldInterface, cPlayer *a_Player, int a_BlockX, int a_BlockY, int a_BlockZ, eBlockFace a_BlockFace)
 {
 }
 

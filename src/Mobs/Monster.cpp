@@ -82,6 +82,12 @@ cMonster::cMonster(const AString & a_ConfigName, eType a_MobType, const AString 
 	, m_AttackRange(2)
 	, m_AttackInterval(0)
 	, m_SightDistance(25)
+	, m_DropChanceWeapon(0.085)
+	, m_DropChanceHelmet(0.085)
+	, m_DropChanceChestplate(0.085)
+	, m_DropChanceLeggings(0.085)
+	, m_DropChanceBoots(0.085)
+	, m_CanPickUpLoot(true)
 	, m_BurnsInDaylight(false)
 {
 	if (!a_ConfigName.empty())
@@ -142,11 +148,11 @@ void cMonster::TickPathFinding()
 		BLOCKTYPE BlockAtYPP = m_World->GetBlock(gCrossCoords[i].x + PosX, PosY + 2, gCrossCoords[i].z + PosZ);
 		BLOCKTYPE BlockAtYM = m_World->GetBlock(gCrossCoords[i].x + PosX, PosY - 1, gCrossCoords[i].z + PosZ);
 
-		if ((!g_BlockIsSolid[BlockAtY]) && (!g_BlockIsSolid[BlockAtYP]) && (!IsBlockLava(BlockAtYM)) && (BlockAtY != E_BLOCK_FENCE) && (BlockAtY != E_BLOCK_FENCE_GATE))
+		if ((!cBlockInfo::IsSolid(BlockAtY)) && (!cBlockInfo::IsSolid(BlockAtYP)) && (!IsBlockLava(BlockAtYM)) && (BlockAtY != E_BLOCK_FENCE) && (BlockAtY != E_BLOCK_FENCE_GATE))
 		{
 			m_PotentialCoordinates.push_back(Vector3d((gCrossCoords[i].x + PosX), PosY, gCrossCoords[i].z + PosZ));
 		}
-		else if ((g_BlockIsSolid[BlockAtY]) && (!g_BlockIsSolid[BlockAtYP]) && (!g_BlockIsSolid[BlockAtYPP]) && (!IsBlockLava(BlockAtYM)) && (BlockAtY != E_BLOCK_FENCE) && (BlockAtY != E_BLOCK_FENCE_GATE))
+		else if ((cBlockInfo::IsSolid(BlockAtY)) && (!cBlockInfo::IsSolid(BlockAtYP)) && (!cBlockInfo::IsSolid(BlockAtYPP)) && (!IsBlockLava(BlockAtYM)) && (BlockAtY != E_BLOCK_FENCE) && (BlockAtY != E_BLOCK_FENCE_GATE))
 		{
 			m_PotentialCoordinates.push_back(Vector3d((gCrossCoords[i].x + PosX), PosY + 1, gCrossCoords[i].z + PosZ));
 		}
@@ -410,9 +416,9 @@ int cMonster::FindFirstNonAirBlockPosition(double a_PosX, double a_PosZ)
 	else if (PosY > cChunkDef::Height)
 		PosY = cChunkDef::Height;
 
-	if (!g_BlockIsSolid[m_World->GetBlock((int)floor(a_PosX), PosY, (int)floor(a_PosZ))])
+	if (!cBlockInfo::IsSolid(m_World->GetBlock((int)floor(a_PosX), PosY, (int)floor(a_PosZ))))
 	{
-		while (!g_BlockIsSolid[m_World->GetBlock((int)floor(a_PosX), PosY, (int)floor(a_PosZ))] && (PosY > 0))
+		while (!cBlockInfo::IsSolid(m_World->GetBlock((int)floor(a_PosX), PosY, (int)floor(a_PosZ))) && (PosY > 0))
 		{
 			PosY--;
 		}
@@ -421,7 +427,7 @@ int cMonster::FindFirstNonAirBlockPosition(double a_PosX, double a_PosZ)
 	}
 	else
 	{
-		while (g_BlockIsSolid[m_World->GetBlock((int)floor(a_PosX), PosY, (int)floor(a_PosZ))] && (PosY < cChunkDef::Height))
+		while (cBlockInfo::IsSolid(m_World->GetBlock((int)floor(a_PosX), PosY, (int)floor(a_PosZ))) && (PosY < cChunkDef::Height))
 		{
 			PosY++;
 		}
@@ -873,6 +879,76 @@ void cMonster::AddRandomDropItem(cItems & a_Drops, unsigned int a_Min, unsigned 
 	if (Count > 0)
 	{
 		a_Drops.push_back(cItem(a_Item, Count, a_ItemHealth));
+	}
+}
+
+
+
+
+
+void cMonster::AddRandomUncommonDropItem(cItems & a_Drops, float a_Chance, short a_Item, short a_ItemHealth)
+{
+	MTRand r1;
+	int Count = r1.randInt() % 1000;
+	if (Count < (a_Chance * 10))
+	{
+		a_Drops.push_back(cItem(a_Item, 1, a_ItemHealth));
+	}
+}
+
+
+
+
+
+void cMonster::AddRandomRareDropItem(cItems & a_Drops, cItems & a_Items, short a_LootingLevel)
+{
+	MTRand r1;
+	int Count = r1.randInt() % 200;
+	if (Count < (5 + a_LootingLevel))
+	{
+		int Rare = r1.randInt() % a_Items.Size();
+		a_Drops.push_back(a_Items.at(Rare));
+	}
+}
+
+
+
+
+
+void cMonster::AddRandomArmorDropItem(cItems & a_Drops, short a_LootingLevel)
+{
+	MTRand r1;
+	if (r1.randInt() % 200 < ((m_DropChanceHelmet * 200) + (a_LootingLevel * 2)))
+	{
+		if (!GetEquippedHelmet().IsEmpty()) a_Drops.push_back(GetEquippedHelmet());
+	}
+	
+	if (r1.randInt() % 200 < ((m_DropChanceChestplate * 200) + (a_LootingLevel * 2)))
+	{
+		if (!GetEquippedChestplate().IsEmpty()) a_Drops.push_back(GetEquippedChestplate());
+	}
+	
+	if (r1.randInt() % 200 < ((m_DropChanceLeggings * 200) + (a_LootingLevel * 2)))
+	{
+		if (!GetEquippedLeggings().IsEmpty()) a_Drops.push_back(GetEquippedLeggings());
+	}
+	
+	if (r1.randInt() % 200 < ((m_DropChanceBoots * 200) + (a_LootingLevel * 2)))
+	{
+		if (!GetEquippedBoots().IsEmpty()) a_Drops.push_back(GetEquippedBoots());
+	}
+}
+
+
+
+
+
+void cMonster::AddRandomWeaponDropItem(cItems & a_Drops, short a_LootingLevel)
+{
+	MTRand r1;
+	if (r1.randInt() % 200 < ((m_DropChanceWeapon * 200) + (a_LootingLevel * 2)))
+	{
+		if (!GetEquippedWeapon().IsEmpty()) a_Drops.push_back(GetEquippedWeapon());
 	}
 }
 

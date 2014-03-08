@@ -12,6 +12,7 @@
 #include "../CommandOutput.h"
 #include "../Root.h"
 #include "../Server.h" // ExecuteConsoleCommand()
+#include "../Chunk.h"
 
 
 
@@ -126,6 +127,8 @@ void cCommandBlockEntity::SetRedstonePower(bool a_IsPowered)
 
 bool cCommandBlockEntity::Tick(float a_Dt, cChunk & a_Chunk)
 {
+	UNUSED(a_Dt);
+	UNUSED(a_Chunk);
 	if (!m_ShouldExecute)
 	{
 		return false;

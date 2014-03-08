@@ -466,6 +466,10 @@ enum
 	E_META_FLOWER_PINK_TULIP      = 7,
 	E_META_FLOWER_OXEYE_DAISY     = 8,
 	
+	// E_BLOCK_JUKEBOX metas
+	E_META_JUKEBOX_OFF            = 0,
+	E_META_JUKEBOX_ON             = 1,
+	
 	// E_BLOCK_HOPPER metas:
 	E_META_HOPPER_FACING_YM  = 0,
 	E_META_HOPPER_UNATTACHED = 1,  // Hopper doesn't move items up, there's no YP
@@ -527,10 +531,12 @@ enum
 	E_META_SANDSTONE_SMOOTH   = 2,
 	
 	// E_BLOCK_SAPLING metas (lowest 3 bits):
-	E_META_SAPLING_APPLE   = 0,
-	E_META_SAPLING_CONIFER = 1,
-	E_META_SAPLING_BIRCH   = 2,
-	E_META_SAPLING_JUNGLE  = 3,
+	E_META_SAPLING_APPLE    = 0,
+	E_META_SAPLING_CONIFER  = 1,
+	E_META_SAPLING_BIRCH    = 2,
+	E_META_SAPLING_JUNGLE   = 3,
+	E_META_SAPLING_ACACIA   = 4,
+	E_META_SAPLING_DARK_OAK = 5,
 	
 	// E_BLOCK_SILVERFISH_EGG metas:
 	E_META_SILVERFISH_EGG_STONE       = 0,
@@ -899,20 +905,6 @@ extern cItem GetIniItemSet(cIniFile & a_IniFile, const char * a_Section, const c
 
 // tolua_end
 
-
-
-
-
-// Block properties:
-extern NIBBLETYPE g_BlockLightValue[256];
-extern NIBBLETYPE g_BlockSpreadLightFalloff[256];
-extern bool       g_BlockTransparent[256];
-extern bool       g_BlockOneHitDig[256];
-extern bool       g_BlockPistonBreakable[256];
-extern bool       g_BlockIsSnowable[256];
-extern bool       g_BlockRequiresSpecialTool[256];
-extern bool       g_BlockIsSolid[256];
-extern bool       g_BlockFullyOccupiesVoxel[256];
 
 
 

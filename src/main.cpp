@@ -30,7 +30,9 @@ bool g_ShouldLogCommOut;
 
 
 /// If defined, a thorough leak finder will be used (debug MSVC only); leaks will be output to the Output window
-#define ENABLE_LEAK_FINDER
+// _X 2014_02_20: Disabled for canon repo, it makes the debug version too slow in MSVC2013
+// and we haven't had a memory leak for over a year anyway.
+// #define ENABLE_LEAK_FINDER
 
 
 
@@ -241,31 +243,36 @@ int main( int argc, char **argv )
 	// Check if comm logging is to be enabled:
 	for (int i = 0; i < argc; i++)
 	{
+		AString Arg(argv[i]);
 		if (
-			(NoCaseCompare(argv[i], "/commlog") == 0) ||
-			(NoCaseCompare(argv[i], "/logcomm") == 0)
+			(NoCaseCompare(Arg, "/commlog") == 0) ||
+			(NoCaseCompare(Arg, "/logcomm") == 0)
 		)
 		{
 			g_ShouldLogCommIn = true;
 			g_ShouldLogCommOut = true;
 		}
-		if (
-			(NoCaseCompare(argv[i], "/commlogin") == 0) ||
-			(NoCaseCompare(argv[i], "/comminlog") == 0) ||
-			(NoCaseCompare(argv[i], "/logcommin") == 0)
+		else if (
+			(NoCaseCompare(Arg, "/commlogin") == 0) ||
+			(NoCaseCompare(Arg, "/comminlog") == 0) ||
+			(NoCaseCompare(Arg, "/logcommin") == 0)
 		)
 		{
 			g_ShouldLogCommIn = true;
 		}
-		if (
-			(NoCaseCompare(argv[i], "/commlogout") == 0) ||
-			(NoCaseCompare(argv[i], "/commoutlog") == 0) ||
-			(NoCaseCompare(argv[i], "/logcommout") == 0)
+		else if (
+			(NoCaseCompare(Arg, "/commlogout") == 0) ||
+			(NoCaseCompare(Arg, "/commoutlog") == 0) ||
+			(NoCaseCompare(Arg, "/logcommout") == 0)
 		)
 		{
 			g_ShouldLogCommOut = true;
 		}
-	}
+		else if (NoCaseCompare(Arg, "nooutbuf") == 0)
+		{
+			setvbuf(stdout, NULL, _IONBF, 0);
+		}
+	}  // for i - argv[]
 	
 	#if !defined(ANDROID_NDK)
 	try

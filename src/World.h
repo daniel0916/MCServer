@@ -24,6 +24,7 @@
 #include "Entities/ProjectileEntity.h"
 #include "ForEachChunkProvider.h"
 #include "Scoreboard.h"
+#include "MapManager.h"
 #include "Blocks/WorldInterface.h"
 #include "Blocks/BroadcastInterface.h"
 
@@ -43,8 +44,10 @@ class cWorldGenerator;  // The generator that actually generates the chunks for 
 class cChunkGenerator;  // The thread responsible for generating chunks
 class cChestEntity;
 class cDispenserEntity;
+class cFlowerPotEntity;
 class cFurnaceEntity;
 class cNoteEntity;
+class cMobHeadEntity;
 class cMobCensus;
 class cCompositeChat;
 class cCuboid;
@@ -58,6 +61,8 @@ typedef cItemCallback<cDispenserEntity>    cDispenserCallback;
 typedef cItemCallback<cFurnaceEntity>      cFurnaceCallback;
 typedef cItemCallback<cNoteEntity>         cNoteBlockCallback;
 typedef cItemCallback<cCommandBlockEntity> cCommandBlockCallback;
+typedef cItemCallback<cMobHeadEntity>      cMobHeadCallback;
+typedef cItemCallback<cFlowerPotEntity>    cFlowerPotCallback;
 
 
 
@@ -135,6 +140,10 @@ public:
 		m_TimeOfDaySecs = (double)a_TimeOfDay / 20.0;
 		BroadcastTimeUpdate();
 	}
+	
+	/** Returns the default weather interval for the specific weather type.
+	Returns -1 for any unknown weather. */
+	int GetDefaultWeatherInterval(eWeather a_Weather);
 	
 	/** Returns the current game mode. Partly OBSOLETE, you should use IsGameModeXXX() functions wherever applicable */
 	eGameMode GetGameMode(void) const { return m_GameMode; }
@@ -339,6 +348,12 @@ public:
 	/** Sets the command block command. Returns true if command changed. */
 	bool SetCommandBlockCommand(int a_BlockX, int a_BlockY, int a_BlockZ, const AString & a_Command);	// tolua_export
 
+	/** Is the trapdoor open? Returns false if there is no trapdoor at the specified coords. */
+	bool IsTrapdoorOpen(int a_BlockX, int a_BlockY, int a_BlockZ);                                      // tolua_export
+
+	/** Set the state of a trapdoor. Returns true if the trapdoor was update, false if there was no trapdoor at those coords. */
+	bool SetTrapdoorOpen(int a_BlockX, int a_BlockY, int a_BlockZ, bool a_Open);                        // tolua_export
+
 	/** Regenerate the given chunk: */
 	void RegenerateChunk(int a_ChunkX, int a_ChunkZ);													// tolua_export
 	
@@ -442,7 +457,7 @@ public:
 	
 	// tolua_begin
 	bool DigBlock   (int a_X, int a_Y, int a_Z);
-	void SendBlockTo(int a_X, int a_Y, int a_Z, cPlayer * a_Player );
+	virtual void SendBlockTo(int a_X, int a_Y, int a_Z, cPlayer * a_Player);
 
 	double GetSpawnX(void) const { return m_SpawnX; }
 	double GetSpawnY(void) const { return m_SpawnY; }
@@ -518,7 +533,13 @@ public:
 
 	/** Calls the callback for the command block at the specified coords; returns false if there's no command block at those coords or callback returns true, returns true if found */
 	bool DoWithCommandBlockAt(int a_BlockX, int a_BlockY, int a_BlockZ, cCommandBlockCallback & a_Callback);  // Exported in ManualBindings.cpp
-	
+
+	/** Calls the callback for the mob head block at the specified coords; returns false if there's no mob head block at those coords or callback returns true, returns true if found */
+	bool DoWithMobHeadAt(int a_BlockX, int a_BlockY, int a_BlockZ, cMobHeadCallback & a_Callback);  // Exported in ManualBindings.cpp
+
+	/** Calls the callback for the flower pot at the specified coords; returns false if there's no flower pot at those coords or callback returns true, returns true if found */
+	bool DoWithFlowerPotAt(int a_BlockX, int a_BlockY, int a_BlockZ, cFlowerPotCallback & a_Callback);  // Exported in ManualBindings.cpp
+
 	/** Retrieves the test on the sign at the specified coords; returns false if there's no sign at those coords, true if found */
 	bool GetSignLines (int a_BlockX, int a_BlockY, int a_BlockZ, AString & a_Line1, AString & a_Line2, AString & a_Line3, AString & a_Line4);  // Exported in ManualBindings.cpp
 	
@@ -575,8 +596,11 @@ public:
 	/** Returns the name of the world.ini file used by this world */
 	const AString & GetIniFileName(void) const {return m_IniFileName; }
 
-	/** Returns the associated scoreboard instance */
+	/** Returns the associated scoreboard instance. */
 	cScoreboard & GetScoreBoard(void) { return m_Scoreboard; }
+
+	/** Returns the associated map manager instance. */
+	cMapManager & GetMapManager(void) { return m_MapManager; }
 
 	bool AreCommandBlocksEnabled(void) const { return m_bCommandBlocksEnabled; }
 	void SetCommandBlocksEnabled(bool a_Flag) { m_bCommandBlocksEnabled = a_Flag; }
@@ -843,6 +867,7 @@ private:
 	cChunkGenerator  m_Generator;
 
 	cScoreboard      m_Scoreboard;
+	cMapManager      m_MapManager;
 	
 	/** The callbacks that the ChunkGenerator uses to store new chunks and interface to plugins */
 	cChunkGeneratorCallbacks m_GeneratorCallbacks;
