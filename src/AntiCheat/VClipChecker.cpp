@@ -23,7 +23,7 @@ bool cVClipChecker::Check(cPlayer & a_Player, double a_Y, double a_DiffY)
 		for (int i = 0; i < (std::round(a_DiffY)) + 1; i++)
 		{
 			BLOCKTYPE Block = a_Player.GetWorld()->GetBlock(a_Player.GetPosX(), to + i, a_Player.GetPosZ());
-			if (Block != E_BLOCK_AIR && g_BlockIsSolid[Block])
+			if (Block != E_BLOCK_AIR && cBlockInfo::IsSolid(Block))
 			{
 				cAntiCheat::LOG(a_Player.GetName() + " tried to move through a solid block");
 				return true;

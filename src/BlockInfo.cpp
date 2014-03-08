@@ -429,6 +429,30 @@ void cBlockInfo::Initialize(void)
 	ms_Info[E_BLOCK_WOOL                ].m_FullyOccupiesVoxel = true;
 	ms_Info[E_BLOCK_STONE               ].m_FullyOccupiesVoxel = true;
 	ms_Info[E_BLOCK_STONE_BRICKS        ].m_FullyOccupiesVoxel = true;
+
+	// Liquid blocks:
+	ms_Info[E_BLOCK_WATER].m_IsLiquid = true;
+	ms_Info[E_BLOCK_STATIONARY_WATER].m_IsLiquid = true;
+	ms_Info[E_BLOCK_LAVA].m_IsLiquid = true;
+	ms_Info[E_BLOCK_STATIONARY_LAVA].m_IsLiquid = true;
+
+	// Climbable blocks:
+	ms_Info[E_BLOCK_VINES].m_IsClimbable = true;
+	ms_Info[E_BLOCK_LADDER].m_IsClimbable = true;
+
+	// Stairs:
+	ms_Info[E_BLOCK_WOODEN_STAIRS].m_IsStair = true;
+	ms_Info[E_BLOCK_COBBLESTONE_STAIRS].m_IsStair = true;
+	ms_Info[E_BLOCK_BRICK_STAIRS].m_IsStair = true;
+	ms_Info[E_BLOCK_STONE_BRICK_STAIRS].m_IsStair = true;
+	ms_Info[E_BLOCK_NETHER_BRICK_STAIRS].m_IsStair = true;
+	ms_Info[E_BLOCK_SANDSTONE_STAIRS].m_IsStair = true;
+	ms_Info[E_BLOCK_SPRUCE_WOOD_STAIRS].m_IsStair = true;
+	ms_Info[E_BLOCK_BIRCH_WOOD_STAIRS].m_IsStair = true;
+	ms_Info[E_BLOCK_JUNGLE_WOOD_STAIRS].m_IsStair = true;
+	ms_Info[E_BLOCK_QUARTZ_STAIRS].m_IsStair = true;
+	ms_Info[E_BLOCK_ACACIA_WOOD_STAIRS].m_IsStair = true;
+	ms_Info[E_BLOCK_DARK_OAK_WOOD_STAIRS].m_IsStair = true;
 }
 
 

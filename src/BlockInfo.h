@@ -58,6 +58,15 @@ public:
 	/** Does this block fully occupy its voxel - is it a 'full' block? */
 	bool m_FullyOccupiesVoxel;
 
+	/** Is this block liquid ? */
+	bool m_IsLiquid;
+
+	/** Is this block climbable ? */
+	bool m_IsClimbable;
+
+	/** Is this block a stair ? */
+	bool m_IsStair;
+
 	// tolua_end
 
 	/** Associated block handler. */
@@ -74,6 +83,9 @@ public:
 	inline static bool RequiresSpecialTool        (BLOCKTYPE a_Type) { return Get(a_Type).m_RequiresSpecialTool; }
 	inline static bool IsSolid                    (BLOCKTYPE a_Type) { return Get(a_Type).m_IsSolid;             }
 	inline static bool FullyOccupiesVoxel         (BLOCKTYPE a_Type) { return Get(a_Type).m_FullyOccupiesVoxel;  }
+	inline static bool IsLiquid                   (BLOCKTYPE a_Type) { return Get(a_Type).m_IsLiquid;            }
+	inline static bool IsClimbable                (BLOCKTYPE a_Type) { return Get(a_Type).m_IsClimbable;         }
+	inline static bool IsStair                    (BLOCKTYPE a_Type) { return Get(a_Type).m_IsStair;             }
 
 	// tolua_end
 

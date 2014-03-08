@@ -17,7 +17,7 @@ bool cWaterWalkingChecker::Check(cPlayer & a_Player, double a_DiffX, double a_Di
 
 		if ((!a_Player.IsInVehicle()) && (!a_Player.IsFlying()))
 		{
-			if (g_BlockIsLiquid[Block2])
+			if (cBlockInfo::IsLiquid(Block2))
 			{
 				if (a_Player.m_IsInWater)
 				{

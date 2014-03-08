@@ -207,7 +207,7 @@ bool cAntiCheat::isHoveringOverWater(cPlayer & a_Player, int blocks)
 		BLOCKTYPE Block = a_Player.GetWorld()->GetBlock(a_Player.GetPosX(), i, a_Player.GetPosZ());
 		if (Block != E_BLOCK_AIR)
 		{
-			return g_BlockIsLiquid[Block];
+			return cBlockInfo::IsLiquid(Block);
 		}
 	}
 	return false;
@@ -223,12 +223,12 @@ bool cAntiCheat::isFullyInWater(cPlayer & a_Player)
 	BLOCKTYPE Block1 = a_Player.GetWorld()->GetBlock(touchedX, a_Player.GetPosY(), a_Player.GetPosZ());
 	BLOCKTYPE Block2 = a_Player.GetWorld()->GetBlock(touchedX, std::round(a_Player.GetPosY()), a_Player.GetPosZ());
 
-	if ((!g_BlockIsLiquid[Block1]) && (!g_BlockIsLiquid[Block2]))
+	if ((!cBlockInfo::IsLiquid(Block1)) && (!cBlockInfo::IsLiquid(Block2)))
 	{
 		return true;
 	}
 
-	return (g_BlockIsLiquid[Block1]) && (g_BlockIsLiquid[Block2]);
+	return (cBlockInfo::IsLiquid(Block1)) && (cBlockInfo::IsLiquid(Block2));
 }
 
 
