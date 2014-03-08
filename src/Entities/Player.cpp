@@ -83,6 +83,7 @@ cPlayer::cPlayer(cClientHandle* a_Client, const AString & a_PlayerName)
 	, m_MovingExempt(0)
 	, m_PlacedBlock(0)
 	, m_BrokenBlock(0)
+	, m_WhileTeleportBack(false)
 	
 {
 	LOGD("Created a player object for \"%s\" @ \"%s\" at %p, ID %d", 
@@ -1158,6 +1159,8 @@ void cPlayer::TeleportToCoords(double a_PosX, double a_PosY, double a_PosZ)
 
 	m_World->BroadcastTeleportEntity(*this, GetClientHandle());
 	m_ClientHandle->SendPlayerMoveLook();
+
+	m_WhileTeleportBack = false;
 }
 
 

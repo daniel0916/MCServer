@@ -538,30 +538,57 @@ void cClientHandle::HandlePlayerPos(double a_PosX, double a_PosY, double a_PosZ,
 		}
 	}
 
+
 	// AntiCheat Checks
+	if (m_Player->m_WhileTeleportBack)
+	{
+		return;
+	}
+
 	double x = std::abs(a_PosX - m_Player->GetPosX());
 	double y = std::abs(a_PosY - m_Player->GetPosY());
 	double z = std::abs(a_PosZ - m_Player->GetPosZ());
 
-	if (cSpeedChecker::checkXZSpeed(*m_Player, x, z))
+	if ((int)floor(m_Player->GetPosX()) != (int)floor(a_PosX) || m_Player->GetPosY() != a_PosY || m_Player->GetPosZ() != a_PosZ)
 	{
-		return;
+		if (cWaterWalkingChecker::Check(*m_Player, x, y, z))
+		{
+			m_Player->TeleportToCoords(m_Player->GetPosX(), m_Player->GetPosY(), m_Player->GetPosZ());
+			m_Player->m_WhileTeleportBack = true;
+			return;
+		}
+		if (cSpeedChecker::checkXZSpeed(*m_Player, x, z))
+		{
+			m_Player->TeleportToCoords(m_Player->GetPosX(), m_Player->GetPosY(), m_Player->GetPosZ());
+			m_Player->m_WhileTeleportBack = true;
+			return;
+		}
+		//if (cSpeedChecker::checkYSpeed(*m_Player, y))
+		//{
+			//m_Player->TeleportToCoords(m_Player->GetPosX(), m_Player->GetPosY(), m_Player->GetPosZ());
+			//m_Player->m_WhileTeleportBack = true;
+			//return;
+		//}
 	}
-	//if (cSpeedChecker::checkYSpeed(*m_Player, y))
-	//{
-		//return;
-	//}
-	if (cSpiderChecker::Check(*m_Player, y))
+
+	if (m_Player->GetPosY() != a_PosY)
 	{
-		return;
+		if (cSpiderChecker::Check(*m_Player, y))
+		{
+			m_Player->TeleportToCoords(m_Player->GetPosX(), m_Player->GetPosY(), m_Player->GetPosZ());
+			m_Player->m_WhileTeleportBack = true;
+			return;
+		}
 	}
-	if (cVClipChecker::Check(*m_Player, a_PosY, y))
+
+	if ((int)floor(m_Player->GetPosY()) != (int)floor(a_PosY))
 	{
-		return;
-	}
-	if (cWaterWalkingChecker::Check(*m_Player, x, y, z))
-	{
-		return;
+		if (cVClipChecker::Check(*m_Player, a_PosY, y))
+		{
+			m_Player->TeleportToCoords(m_Player->GetPosX(), m_Player->GetPosY(), m_Player->GetPosZ());
+			m_Player->m_WhileTeleportBack = true;
+			return;
+		}
 	}
 
 	

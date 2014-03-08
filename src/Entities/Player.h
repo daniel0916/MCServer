@@ -372,6 +372,8 @@ public:
 	double m_Messages;
 
 	/// Values for AntiCheat
+	bool m_WhileTeleportBack;
+
 	// FastDropChecker:
 	int m_BlocksDropped;
 	time_t m_BlockTime;
