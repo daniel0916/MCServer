@@ -3,6 +3,7 @@
 
 #include "FastDropChecker.h"
 #include "AntiCheat.h"
+#include "../Entities/Player.h"
 
 
 

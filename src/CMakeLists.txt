@@ -232,7 +232,7 @@ endif ()
 
 
 if (NOT MSVC)
-	target_link_libraries(${EXECUTABLE} OSSupport HTTPServer Bindings Items Blocks)
+	target_link_libraries(${EXECUTABLE} OSSupport HTTPServer Bindings Items Blocks AntiCheat)
 	target_link_libraries(${EXECUTABLE} Protocol Generating WorldStorage)
 	target_link_libraries(${EXECUTABLE} Mobs Entities Simulator UI BlockEntities)
 endif ()

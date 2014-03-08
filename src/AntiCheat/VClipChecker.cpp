@@ -3,6 +3,7 @@
 
 #include "VClipChecker.h"
 #include "AntiCheat.h"
+#include "../Entities/Player.h"
 
 
 
@@ -12,15 +13,15 @@ bool cVClipChecker::Check(cPlayer & a_Player, double a_Y, double a_DiffY)
 {
 	if (cAntiCheat::m_VClip)
 	{
-		double from = std::round(a_Player.GetPosY());
-		double to = std::round(a_Y);
+		double from = round(a_Player.GetPosY());
+		double to = round(a_Y);
 
-		if (a_Player.IsInVehicle() || (from == to || from < to) || std::round(a_DiffY) < 2)
+		if (a_Player.IsInVehicle() || (from == to || from < to) || round(a_DiffY) < 2)
 		{
 			return false;
 		}
 
-		for (int i = 0; i < (std::round(a_DiffY)) + 1; i++)
+		for (int i = 0; i < (round(a_DiffY)) + 1; i++)
 		{
 			BLOCKTYPE Block = a_Player.GetWorld()->GetBlock(a_Player.GetPosX(), to + i, a_Player.GetPosZ());
 			if (Block != E_BLOCK_AIR && cBlockInfo::IsSolid(Block))

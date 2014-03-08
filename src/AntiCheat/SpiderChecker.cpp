@@ -3,6 +3,7 @@
 
 #include "SpiderChecker.h"
 #include "AntiCheat.h"
+#include "../Entities/Player.h"
 
 
 

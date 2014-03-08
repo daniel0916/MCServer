@@ -3,6 +3,7 @@
 
 #include "SpeedChecker.h"
 #include "AntiCheat.h"
+#include "../Entities/Player.h"
 
 
 

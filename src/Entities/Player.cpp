@@ -18,8 +18,8 @@
 #include "../MersenneTwister.h"
 #include "../Chunk.h"
 #include "../Items/ItemHandler.h"
-#include "AntiCheat/AntiCheat.h"
-#include "AntiCheat/FastDropChecker.h"
+#include "../AntiCheat/AntiCheat.h"
+#include "../AntiCheat/FastDropChecker.h"
 
 #include "../Vector3d.h"
 #include "../Vector3f.h"

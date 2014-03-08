@@ -3,9 +3,9 @@
 
 #include "AntiCheat.h"
 #include "inifile/iniFile.h"
-#include "Entities/Player.h"
-#include "Blocks/BlockHandler.h"
-#include "Log.h"
+#include "../Entities/Player.h"
+#include "../Blocks/BlockHandler.h"
+#include "../Log.h"
 
 
 
@@ -221,7 +221,7 @@ bool cAntiCheat::isFullyInWater(cPlayer & a_Player)
 	double touchedX = fixXAxis(a_Player.GetPosX());
 
 	BLOCKTYPE Block1 = a_Player.GetWorld()->GetBlock(touchedX, a_Player.GetPosY(), a_Player.GetPosZ());
-	BLOCKTYPE Block2 = a_Player.GetWorld()->GetBlock(touchedX, std::round(a_Player.GetPosY()), a_Player.GetPosZ());
+	BLOCKTYPE Block2 = a_Player.GetWorld()->GetBlock(touchedX, round(a_Player.GetPosY()), a_Player.GetPosZ());
 
 	if ((!cBlockInfo::IsLiquid(Block1)) && (!cBlockInfo::IsLiquid(Block2)))
 	{
@@ -238,7 +238,7 @@ bool cAntiCheat::isFullyInWater(cPlayer & a_Player)
 double cAntiCheat::fixXAxis(double a_X)
 {
 	double touchedX = a_X;
-	double rem = touchedX - std::round(touchedX) + 0.01;
+	double rem = touchedX - round(touchedX) + 0.01;
 	if (rem < 0.30)
 	{
 		int floor = (int)a_X;
