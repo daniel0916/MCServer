@@ -7,8 +7,7 @@ include_directories (SYSTEM "${PROJECT_SOURCE_DIR}/../lib/jsoncpp/include")
 include_directories (SYSTEM "${PROJECT_SOURCE_DIR}/../lib/polarssl/include")
 
 set(FOLDERS OSSupport HTTPServer Items Blocks Protocol Generating) 
-set(FOLDERS ${FOLDERS} WorldStorage Mobs Entities Simulator UI BlockEntities)
-set(FOLDERS ${FOLDERS} AntiCheat)
+set(FOLDERS ${FOLDERS} WorldStorage Mobs AntiCheat Entities Simulator UI BlockEntities)
 
 
 
@@ -232,9 +231,9 @@ endif ()
 
 
 if (NOT MSVC)
-	target_link_libraries(${EXECUTABLE} OSSupport HTTPServer Bindings Items Blocks AntiCheat)
+	target_link_libraries(${EXECUTABLE} OSSupport HTTPServer Bindings Items Blocks)
 	target_link_libraries(${EXECUTABLE} Protocol Generating WorldStorage)
-	target_link_libraries(${EXECUTABLE} Mobs Entities Simulator UI BlockEntities)
+	target_link_libraries(${EXECUTABLE} Mobs Entities AntiCheat Simulator UI BlockEntities)
 endif ()
 if (WIN32)
 	target_link_libraries(${EXECUTABLE} expat tolualib ws2_32.lib Psapi.lib)
