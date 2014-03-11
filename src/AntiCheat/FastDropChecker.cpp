@@ -28,7 +28,7 @@ bool cFastDropChecker::Check(cPlayer & a_Player)
 
 			if (time1 < 0.8)
 			{
-				cAntiCheat::LOG(a_Player.GetName() + " dropped an item too fast (actual time=" + Printf("%d", time) + ", min time=0.8)");
+				cAntiCheat::LOG(a_Player.GetName() + " dropped an item too fast (actual time=" + Printf("%d", time1) + ", min time=0.8)");
 				return true;
 			}
 		}
