@@ -1,5 +1,6 @@
 #include "Globals.h"
 #include "BlockBed.h"
+#include "../AntiCheat/AntiCheat.h"
 
 
 
@@ -62,7 +63,6 @@ void cBlockBedHandler::OnUse(cChunkInterface & a_ChunkInterface, cWorldInterface
 	{
 		if (a_WorldInterface.GetTimeOfDay() > 13000)
 		{
-			a_Player->SetIsSleeping(true);
 			NIBBLETYPE Meta = a_ChunkInterface.GetBlockMeta(a_BlockX, a_BlockY, a_BlockZ);
 			if (Meta & 0x4)
 			{
@@ -85,6 +85,11 @@ void cBlockBedHandler::OnUse(cChunkInterface & a_ChunkInterface, cWorldInterface
 					}
 				}
 				a_ChunkInterface.SetBlockMeta(a_BlockX, a_BlockY, a_BlockZ, (Meta | (1 << 2)));
+
+				a_Player->SetIsSleeping(true);
+
+				// Log it for MovingExempt (AntiCheat)
+				cAntiCheat::logEnterExit(*a_Player);
 			}
 			
 		} else {

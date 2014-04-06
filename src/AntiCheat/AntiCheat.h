@@ -26,6 +26,10 @@ public:
 	static bool justPlaced(cPlayer & a_Player);
 	static bool justBroke(cPlayer & a_Player);
 	static bool justVelocity(cPlayer & a_Player);
+	static bool extendVelocityTime(cPlayer & a_Player);
+	static void logEnterExit(cPlayer & a_Player);
+	static void logToggleSneak(cPlayer & a_Player);
+	static void logJoin(cPlayer & a_Player);
 	static double fixXAxis(double a_X);
 	static UInt64 doubleToRawLongBits(double a_Num);
 	static int increment(cPlayer & a_Player, int map, int num);

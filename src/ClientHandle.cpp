@@ -238,6 +238,9 @@ void cClientHandle::Authenticate(void)
 		cRoot::Get()->BroadcastChatJoin(Printf("%s has joined the game", GetUsername().c_str()));
 		LOGINFO("Player %s has joined the game.", m_Username.c_str());
 	}
+
+	// Log it for MovingExempt (AntiCheat)
+	cAntiCheat::logJoin(*m_Player);
 	
 	m_ConfirmPosition = m_Player->GetPosition();
 
@@ -495,6 +498,12 @@ void cClientHandle::HandlePlayerAbilities(bool a_CanFly, bool a_IsFlying, float 
 
 	m_Player->SetCanFly(a_CanFly);
 	m_Player->SetFlying(a_IsFlying);
+
+	// Log it for MovingExempt (AntiCheat)
+	if (!a_IsFlying)
+	{
+		cAntiCheat::logEnterExit(*m_Player);
+	}
 }
 
 
@@ -550,34 +559,35 @@ void cClientHandle::HandlePlayerPos(double a_PosX, double a_PosY, double a_PosZ,
 	double y = std::abs(a_PosY - m_Player->GetPosY());
 	double z = std::abs(a_PosZ - m_Player->GetPosZ());
 
+
 	if ((int)floor(m_Player->GetPosX()) != (int)floor(a_PosX) || m_Player->GetPosY() != a_PosY || m_Player->GetPosZ() != a_PosZ)
 	{
 		if (cWaterWalkingChecker::Check(*m_Player, x, y, z))
 		{
-			m_Player->TeleportToCoords(m_Player->GetPosX(), m_Player->GetPosY(), m_Player->GetPosZ());
 			m_Player->m_WhileTeleportBack = true;
+			m_Player->TeleportToCoords(m_Player->GetPosX(), m_Player->GetPosY(), m_Player->GetPosZ());
 			return;
 		}
 		if (cSpeedChecker::checkXZSpeed(*m_Player, x, z))
 		{
-			m_Player->TeleportToCoords(m_Player->GetPosX(), m_Player->GetPosY(), m_Player->GetPosZ());
 			m_Player->m_WhileTeleportBack = true;
+			m_Player->TeleportToCoords(m_Player->GetPosX(), m_Player->GetPosY(), m_Player->GetPosZ());
 			return;
 		}
-		//if (cSpeedChecker::checkYSpeed(*m_Player, y))
-		//{
-			//m_Player->TeleportToCoords(m_Player->GetPosX(), m_Player->GetPosY(), m_Player->GetPosZ());
-			//m_Player->m_WhileTeleportBack = true;
-			//return;
-		//}
 	}
 
 	if (m_Player->GetPosY() != a_PosY)
 	{
 		if (cSpiderChecker::Check(*m_Player, y))
 		{
-			m_Player->TeleportToCoords(m_Player->GetPosX(), m_Player->GetPosY(), m_Player->GetPosZ());
 			m_Player->m_WhileTeleportBack = true;
+			m_Player->TeleportToCoords(m_Player->GetPosX(), m_Player->GetPosY(), m_Player->GetPosZ());
+			return;
+		}
+		if (cSpeedChecker::checkYSpeed(*m_Player, y))
+		{
+			m_Player->m_WhileTeleportBack = true;
+			m_Player->TeleportToCoords(m_Player->GetPosX(), m_Player->GetPosY(), m_Player->GetPosZ());
 			return;
 		}
 	}
@@ -586,8 +596,8 @@ void cClientHandle::HandlePlayerPos(double a_PosX, double a_PosY, double a_PosZ,
 	{
 		if (cVClipChecker::Check(*m_Player, a_PosY, y))
 		{
-			m_Player->TeleportToCoords(m_Player->GetPosX(), m_Player->GetPosY(), m_Player->GetPosZ());
 			m_Player->m_WhileTeleportBack = true;
+			m_Player->TeleportToCoords(m_Player->GetPosX(), m_Player->GetPosY(), m_Player->GetPosZ());
 			return;
 		}
 	}
@@ -1319,6 +1329,10 @@ void cClientHandle::HandleAnimation(char a_Animation)
 		case 2:
 		{
 			m_Player->SetIsSleeping(false);
+
+			// Log it for MovingExempt (AntiCheat)
+			cAntiCheat::logEnterExit(*m_Player);
+
 			break;
 		}
 		case 3:
@@ -2177,6 +2191,14 @@ void cClientHandle::SendEntityVelocity(const cEntity & a_Entity)
 		if (a_Entity.IsPlayer())
 		{
 			cPlayer * Player = (cPlayer *)&a_Entity;
+
+			//if (cAntiCheat::justVelocity(*Player) && cAntiCheat::extendVelocityTime(*Player))
+			//if (cAntiCheat::justVelocity(*Player))
+			//{
+				//return;
+				//cSpeedChecker::logVelocity(*Player);
+			//}
+
 			cSpeedChecker::logVelocity(*Player);
 		}
 	}

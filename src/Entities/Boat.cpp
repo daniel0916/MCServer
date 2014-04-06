@@ -8,6 +8,7 @@
 #include "../World.h"
 #include "../ClientHandle.h"
 #include "Player.h"
+#include "../AntiCheat/AntiCheat.h"
 
 
 
@@ -64,6 +65,9 @@ void cBoat::OnRightClicked(cPlayer & a_Player)
 		{
 			// This player is already sitting in, they want out.
 			a_Player.Detach();
+
+			// Log it for MovingExempt (AntiCheat)
+			cAntiCheat::logEnterExit(a_Player);
 			return;
 		}
 		
@@ -79,6 +83,9 @@ void cBoat::OnRightClicked(cPlayer & a_Player)
 	
 	// Attach the player to this boat
 	a_Player.AttachTo(this);
+
+	// Log it for MovingExempt (AntiCheat)
+	cAntiCheat::logEnterExit(a_Player);
 }
 
 

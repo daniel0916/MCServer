@@ -80,6 +80,9 @@ cPlayer::cPlayer(cClientHandle* a_Client, const AString & a_PlayerName)
 	, m_WaterSpeedViolation(-1)
 	, m_Velocitized(0)
 	, m_SpeedViolation(0)
+	, m_VelocityTrack(0)
+	, m_InventoryTime(0)
+	, m_InventoryClicks(0)
 	, m_MovingExempt(0)
 	, m_PlacedBlock(0)
 	, m_BrokenBlock(0)
@@ -761,8 +764,15 @@ void cPlayer::SetCrouch(bool a_IsCrouched)
 		// No change
 		return;
 	}
+
 	m_IsCrouched = a_IsCrouched;
 	m_World->BroadcastEntityMetadata(*this);
+
+	if (a_IsCrouched)
+	{
+		// Log it for MovingExempt (AntiCheat)
+		cAntiCheat::logToggleSneak(*this);
+	}
 }
 
 
@@ -779,6 +789,12 @@ void cPlayer::SetSprint(bool a_IsSprinting)
 	
 	m_IsSprinting = a_IsSprinting;
 	m_ClientHandle->SendPlayerMaxSpeed();
+
+	// Log it for MovingExempt (AntiCheat)
+	if (!a_IsSprinting)
+	{
+		cAntiCheat::logEnterExit(*this);
+	}
 }
 
 
@@ -1115,6 +1131,9 @@ void cPlayer::SetGameMode(eGameMode a_GameMode)
 		SetFlying(false);
 		SetCanFly(false);
 	}
+
+	// Log it for MovingExempt (AntiCheat)
+	cAntiCheat::logEnterExit(*this);
 }
 
 

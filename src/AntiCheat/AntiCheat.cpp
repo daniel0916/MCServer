@@ -2,10 +2,12 @@
 #include "Globals.h"  // NOTE: MSVC stupidness requires this to be the same across all modules
 
 #include "AntiCheat.h"
+#include "AntiCheatTask.h"
 #include "inifile/iniFile.h"
 #include "../Entities/Player.h"
 #include "../Blocks/BlockHandler.h"
 #include "../Log.h"
+#include "../World.h"
 
 
 
@@ -133,7 +135,7 @@ bool cAntiCheat::isDoing(cPlayer & a_Player, time_t a_Map, double a_Max)
 
 bool cAntiCheat::isMovingExempt(cPlayer & a_Player)
 {
-	if (!isDoing(a_Player, a_Player.m_MovingExempt, -1))
+	if (!isDoing(a_Player, a_Player.m_MovingExempt, -0.001))
 	{
 		a_Player.m_MovingExempt = 0;
 		return false;
@@ -194,6 +196,56 @@ bool cAntiCheat::justBroke(cPlayer & a_Player)
 bool cAntiCheat::justVelocity(cPlayer & a_Player)
 {
 	return (true ? (time(0) - a_Player.m_Velocitized) < 2.1 : false);
+}
+
+
+
+
+
+bool cAntiCheat::extendVelocityTime(cPlayer & a_Player)
+{
+	a_Player.m_VelocityTrack += 1;
+
+	if (a_Player.m_VelocityTrack > 2)
+	{
+		a_Player.m_Velocitized = time(0) + 5;
+
+
+		a_Player.GetWorld()->ScheduleTask(40, new cAntiCheatTask(a_Player));
+
+
+		return true;
+	}
+
+
+	return false;
+}
+
+
+
+
+
+void cAntiCheat::logEnterExit(cPlayer & a_Player)
+{
+	a_Player.m_MovingExempt = time(0) + 1;
+}
+
+
+
+
+
+void cAntiCheat::logToggleSneak(cPlayer & a_Player)
+{
+	a_Player.m_MovingExempt = time(0) + 0.25;
+}
+
+
+
+
+
+void cAntiCheat::logJoin(cPlayer & a_Player)
+{
+	a_Player.m_MovingExempt = time(0) + 2;
 }
 
 

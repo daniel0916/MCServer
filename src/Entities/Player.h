@@ -386,6 +386,11 @@ public:
 	// SpeedChecker:
 	time_t m_Velocitized;
 	int m_SpeedViolation;
+	int m_VelocityTrack;
+
+	// InventoryClickChecker:
+	time_t m_InventoryTime;
+	int m_InventoryClicks;
 
 	// cAntiCheat::isMovingExempt Method
 	time_t m_MovingExempt;

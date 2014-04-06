@@ -12,6 +12,7 @@
 #include "../Chunk.h"
 #include "Player.h"
 #include "../BoundingBox.h"
+#include "../AntiCheat/AntiCheat.h"
 
 #define MAX_SPEED 8
 #define MAX_SPEED_NEGATIVE -MAX_SPEED
@@ -998,6 +999,9 @@ void cRideableMinecart::OnRightClicked(cPlayer & a_Player)
 		{
 			// This player is already sitting in, they want out.
 			a_Player.Detach();
+
+			// Log it for MovingExempt (AntiCheat)
+			cAntiCheat::logEnterExit(a_Player);
 			return;
 		}
 		
@@ -1013,6 +1017,9 @@ void cRideableMinecart::OnRightClicked(cPlayer & a_Player)
 	
 	// Attach the player to this minecart
 	a_Player.AttachTo(this);
+
+	// Log it for MovingExempt (AntiCheat)
+	cAntiCheat::logEnterExit(a_Player);
 }
 
 

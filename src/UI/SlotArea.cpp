@@ -13,6 +13,7 @@
 #include "Window.h"
 #include "../CraftingRecipes.h"
 #include "../Root.h"
+#include "../AntiCheat/InventoryClickChecker.h"
 
 
 
@@ -47,6 +48,12 @@ void cSlotArea::Clicked(cPlayer & a_Player, int a_SlotNum, eClickAction a_ClickA
 	if (GetSlot(a_SlotNum, a_Player) == NULL)
 	{
 		LOGWARNING("GetSlot(%d) returned NULL! Ignoring click", a_SlotNum);
+		return;
+	}
+
+	if (cInventoryClickChecker::Check(a_Player))
+	{
+		SetSlot(a_SlotNum, a_Player, a_ClickedItem);
 		return;
 	}
 	

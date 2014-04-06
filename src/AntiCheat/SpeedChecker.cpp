@@ -14,8 +14,9 @@ bool cSpeedChecker::checkYSpeed(cPlayer & a_Player, double a_DiffY)
 	if (cAntiCheat::m_Speed)
 	{
 		// TODO: Add Jump Potion Checking
-		if (!cAntiCheat::isMovingExempt(a_Player) && !a_Player.IsInVehicle() && !a_Player.IsSleeping() && a_DiffY > 0.5 && !cAntiCheat::isDoing(a_Player, a_Player.m_Velocitized, 3))
+		if (!cAntiCheat::isMovingExempt(a_Player) && !a_Player.IsInVehicle() && !a_Player.IsSleeping() && a_DiffY > 0.5 && !cAntiCheat::isDoing(a_Player, a_Player.m_Velocitized, 0.003))
 		{
+			a_Player.m_Velocitized = 0;
 			cAntiCheat::LOG(a_Player.GetName() + "'s y speed was too high (speed=" + Printf("%f", a_DiffY) + ", max=0.5)");
 			return true;
 		}
