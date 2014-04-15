@@ -24,7 +24,7 @@
 
 
 
-cPlayer::cPlayer(cClientHandle* a_Client, const AString & a_PlayerName)
+cPlayer::cPlayer(cClientHandle* a_Client, const AString & a_PlayerName, const AString & a_UUID)
 	: super(etPlayer, 0.6, 1.8)
 	, m_bVisible(true)
 	, m_FoodLevel(MAX_FOOD_LEVEL)
@@ -61,6 +61,7 @@ cPlayer::cPlayer(cClientHandle* a_Client, const AString & a_PlayerName)
 	, m_BowCharge(0)
 	, m_FloaterID(-1)
 	, m_Team(NULL)
+	, m_UUID(a_UUID)
 {
 	LOGD("Created a player object for \"%s\" @ \"%s\" at %p, ID %d", 
 		a_PlayerName.c_str(), a_Client->GetIPString().c_str(),

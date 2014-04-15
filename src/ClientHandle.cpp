@@ -179,7 +179,7 @@ void cClientHandle::Destroy(void)
 
 void cClientHandle::GenerateOfflineUUID(void)
 {
-	m_UUID = GenerateOfflineUUID(m_Username);
+	m_Player->SetUUID(GenerateOfflineUUID(m_Username));
 }
 
 
@@ -233,13 +233,12 @@ void cClientHandle::Authenticate(const AString & a_Name, const AString & a_UUID)
 	ASSERT( m_Player == NULL );
 
 	m_Username = a_Name;
-	m_UUID = a_UUID;
-	
-	// Send login success (if the protocol supports it):
-	m_Protocol->SendLoginSuccess();
 
 	// Spawn player (only serversided, so data is loaded)
-	m_Player = new cPlayer(this, GetUsername());
+	m_Player = new cPlayer(this, GetUsername(), a_UUID);
+
+	// Send login success (if the protocol supports it):
+	m_Protocol->SendLoginSuccess();
 
 	cWorld * World = cRoot::Get()->GetWorld(m_Player->GetLoadedWorldName());
 	if (World == NULL)

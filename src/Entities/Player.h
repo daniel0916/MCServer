@@ -38,7 +38,7 @@ public:
 	CLASS_PROTODEF(cPlayer)
 	
 
-	cPlayer(cClientHandle * a_Client, const AString & a_PlayerName);
+	cPlayer(cClientHandle * a_Client, const AString & a_PlayerName, const AString & a_UUID);
 	virtual ~cPlayer();
 
 	virtual void SpawnOn(cClientHandle & a_Client) override;
@@ -213,6 +213,9 @@ public:
 
 	const AString & GetName(void) const { return m_PlayerName; }
 	void SetName(const AString & a_Name) { m_PlayerName = a_Name; }
+
+	const AString & GetUUID(void) const { return m_UUID; }
+	void SetUUID(const AString & a_UUID) { m_UUID = a_UUID; }
 	
 	// tolua_end
 
@@ -395,6 +398,7 @@ protected:
 	GroupList m_Groups;
 
 	AString m_PlayerName;
+	AString m_UUID;
 	AString m_LoadedWorldName;
 
 	/** Xp Level stuff */

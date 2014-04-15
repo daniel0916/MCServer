@@ -579,7 +579,7 @@ void cProtocol172::SendLoginSuccess(void)
 	ASSERT(m_State == 2);  // State: login?
 	
 	cPacketizer Pkt(*this, 0x02);  // Login success packet
-	Pkt.WriteString(m_Client->GetUUID());
+	Pkt.WriteString(m_Client->GetPlayer()->GetUUID());
 	Pkt.WriteString(m_Client->GetUsername());
 
 	m_State = 3;  // State = Game
@@ -812,7 +812,7 @@ void cProtocol172::SendPlayerSpawn(const cPlayer & a_Player)
 	// Called to spawn another player for the client
 	cPacketizer Pkt(*this, 0x0c);  // Spawn Player packet
 	Pkt.WriteVarInt(a_Player.GetUniqueID());
-	Pkt.WriteString(a_Player.GetClientHandle()->GetUUID());
+	Pkt.WriteString(a_Player.GetUUID());
 	Pkt.WriteString(a_Player.GetName());
 	Pkt.WriteFPInt(a_Player.GetPosX());
 	Pkt.WriteFPInt(a_Player.GetPosY());
@@ -2772,7 +2772,7 @@ void cProtocol176::SendPlayerSpawn(const cPlayer & a_Player)
 	// Called to spawn another player for the client
 	cPacketizer Pkt(*this, 0x0c);  // Spawn Player packet
 	Pkt.WriteVarInt(a_Player.GetUniqueID());
-	Pkt.WriteString(a_Player.GetClientHandle()->GetUUID());
+	Pkt.WriteString(a_Player.GetUUID());
 	Pkt.WriteString(a_Player.GetName());
 	Pkt.WriteVarInt(0);  // We have no data to send here
 	Pkt.WriteFPInt(a_Player.GetPosX());

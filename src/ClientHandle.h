@@ -61,9 +61,6 @@ public:
 	const AString & GetIPString(void) const { return m_IPString; }
 	
 	cPlayer* GetPlayer() { return m_Player; }	// tolua_export
-
-	const AString & GetUUID(void) const { return m_UUID; } // tolua_export
-	void SetUUID(const AString & a_UUID) { m_UUID = a_UUID; }
 	
 	/** Generates an UUID based on the username stored for this client, and stores it in the m_UUID member.
 	This is used for the offline (non-auth) mode, when there's no UUID source.
@@ -340,7 +337,6 @@ private:
 	
 	static int s_ClientCount;
 	int m_UniqueID;
-	AString m_UUID;
 	
 	/** Set to true when the chunk where the player is is sent to the client. Used for spawning the player */
 	bool m_HasSentPlayerChunk;
