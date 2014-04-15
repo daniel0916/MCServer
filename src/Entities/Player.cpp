@@ -1686,6 +1686,7 @@ bool cPlayer::SaveToDisk()
 	root["foodExhaustion"] = m_FoodExhaustionLevel;
 	root["world"]          = GetWorld()->GetName();
 	root["isflying"]       = IsFlying();
+	root["playername"] = GetName();
 
 	if (m_GameMode == GetWorld()->GetGameMode())
 	{
