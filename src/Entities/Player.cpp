@@ -1570,10 +1570,16 @@ bool cPlayer::LoadFromDisk()
 	Printf(SourceFile, "players/%s.json", m_UUID.c_str() );
 
 	cFile f;
-	if (!f.Open(SourceFile, cFile::fmRead))
+
+	AString OldSourceFile;
+	Printf(OldSourceFile, "players/%s.json", m_PlayerName.c_str() );
+	if (!f.Open(OldSourceFile, cFile::fmRead))
 	{
-		// This is a new player whom we haven't seen yet, bail out, let them have the defaults
-		return false;
+		if (!f.Open(SourceFile, cFile::fmRead))
+		{
+			// This is a new player whom we haven't seen yet, bail out, let them have the defaults
+			return false;
+		}
 	}
 
 	AString buffer;
@@ -1635,6 +1641,11 @@ bool cPlayer::LoadFromDisk()
 	LOGD("Player \"%s\" was read from file, spawning at {%.2f, %.2f, %.2f} in world \"%s\"",
 		m_PlayerName.c_str(), GetPosX(), GetPosY(), GetPosZ(), m_LoadedWorldName.c_str()
 	);
+
+	if (cFile::Exists(OldSourceFile))
+	{
+		cFile::Delete(OldSourceFile);
+	}
 	
 	return true;
 }
