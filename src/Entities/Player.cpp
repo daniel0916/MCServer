@@ -1567,7 +1567,7 @@ bool cPlayer::LoadFromDisk()
 	}
 
 	AString SourceFile;
-	Printf(SourceFile, "players/%s.json", m_PlayerName.c_str() );
+	Printf(SourceFile, "players/%s.json", m_UUID.c_str() );
 
 	cFile f;
 	if (!f.Open(SourceFile, cFile::fmRead))
@@ -1689,7 +1689,7 @@ bool cPlayer::SaveToDisk()
 	std::string JsonData = writer.write(root);
 
 	AString SourceFile;
-	Printf(SourceFile, "players/%s.json", m_PlayerName.c_str() );
+	Printf(SourceFile, "players/%s.json", m_UUID.c_str());
 
 	cFile f;
 	if (!f.Open(SourceFile, cFile::fmWrite))
