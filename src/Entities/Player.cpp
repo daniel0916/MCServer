@@ -1520,7 +1520,7 @@ void cPlayer::LoadPermissionsFromDisk()
 	cIniFile IniFile;
 	if (IniFile.ReadFile("users.ini"))
 	{
-		std::string Groups = IniFile.GetValue(m_PlayerName, "Groups", "");
+		std::string Groups = IniFile.GetValue(m_UUID, "Groups", "");
 		if (!Groups.empty())
 		{
 			AStringVector Split = StringSplitAndTrim(Groups, ",");
@@ -1538,7 +1538,7 @@ void cPlayer::LoadPermissionsFromDisk()
 			AddToGroup("Default");
 		}
 
-		AString Color = IniFile.GetValue(m_PlayerName, "Color", "-");
+		AString Color = IniFile.GetValue(m_UUID, "Color", "-");
 		if (!Color.empty())
 		{
 			m_Color = Color[0];
