@@ -19,6 +19,13 @@
 #include "inifile/iniFile.h"
 #include "json/json.h"
 
+#include "polarssl/config.h"
+#include "polarssl/net.h"
+#include "polarssl/ssl.h"
+#include "polarssl/entropy.h"
+#include "polarssl/ctr_drbg.h"
+#include "polarssl/error.h"
+#include "polarssl/certs.h"
 
 
 
@@ -1933,6 +1940,169 @@ void cPlayer::Detach()
 			}
 		}
 	}
+}
+
+
+
+
+
+AString cPlayer::GetUUID(AString a_PlayerName)
+{
+	AString Server = "api.mojang.com";
+	AString Address = "/profiles/page/1";
+
+	int ret, server_fd = -1;
+	unsigned char buf[1024];
+	const char *pers = "PlayerUUID";
+
+	entropy_context entropy;
+	ctr_drbg_context ctr_drbg;
+	ssl_context ssl;
+	x509_crt cacert;
+
+	/* Initialize the RNG and the session data */
+	memset(&ssl, 0, sizeof(ssl_context));
+	x509_crt_init(&cacert);
+
+	entropy_init(&entropy);
+	if ((ret = ctr_drbg_init(&ctr_drbg, entropy_func, &entropy, (const unsigned char *)pers, strlen(pers))) != 0)
+	{
+		return "ERROR";
+	}
+
+	/* Initialize certificates */
+	// TODO: Grab the sessionserver's root CA and any intermediates and hard-code them here, instead of test_ca_list
+	ret = x509_crt_parse(&cacert, (const unsigned char *)test_ca_list, strlen(test_ca_list));
+
+	if (ret < 0)
+	{
+		return "ERROR";
+	}
+
+	/* Connect */
+	if ((ret = net_connect(&server_fd, Server.c_str(), 443)) != 0)
+	{
+		return "ERROR";
+	}
+
+	/* Setup */
+	if ((ret = ssl_init(&ssl)) != 0)
+	{
+		return "ERROR";
+	}
+	ssl_set_endpoint(&ssl, SSL_IS_CLIENT);
+	ssl_set_authmode(&ssl, SSL_VERIFY_OPTIONAL);
+	ssl_set_ca_chain(&ssl, &cacert, NULL, "PolarSSL Server 1");
+	ssl_set_rng(&ssl, ctr_drbg_random, &ctr_drbg);
+	ssl_set_bio(&ssl, net_recv, &server_fd, net_send, &server_fd);
+
+	/* Handshake */
+	while ((ret = ssl_handshake(&ssl)) != 0)
+	{
+		if ((ret != POLARSSL_ERR_NET_WANT_READ) && (ret != POLARSSL_ERR_NET_WANT_WRITE))
+		{
+			return "ERROR";
+		}
+	}
+
+	/* Write the POST request */
+	AString Request;
+	AString JSONMessage("{\"name\":\"" + a_PlayerName + "\",\"agent\":\"Minecraft\"}");
+	Request += "POST " + Address + " HTTP/1.1\r\n";
+	Request += "Host: " + Server + "\r\n";
+	Request += "User-Agent: MCServer\r\n";
+	Request += "Connection: close\r\n";
+	Request += "Content-Type: application/json\r\n";
+	Request += "Content-Length: " + Printf("%d", JSONMessage.size()) + "\r\n\r\n";
+	Request += JSONMessage;
+
+	ret = ssl_write(&ssl, (const unsigned char *)Request.c_str(), Request.size());
+	if (ret <= 0)
+	{
+		return "ERROR";
+	}
+
+	/* Read the HTTP response */
+	std::string Response;
+	for (;;)
+	{
+		memset(buf, 0, sizeof(buf));
+		ret = ssl_read(&ssl, buf, sizeof(buf));
+
+		if ((ret == POLARSSL_ERR_NET_WANT_READ) || (ret == POLARSSL_ERR_NET_WANT_WRITE))
+		{
+			continue;
+		}
+		if (ret == POLARSSL_ERR_SSL_PEER_CLOSE_NOTIFY)
+		{
+			break;
+		}
+		if (ret < 0)
+		{
+			break;
+		}
+		if (ret == 0)
+		{
+			break;
+		}
+
+		Response.append((const char *)buf, ret);
+	}
+
+	ssl_close_notify(&ssl);
+	x509_crt_free(&cacert);
+	net_close(server_fd);
+	ssl_free(&ssl);
+	entropy_free(&entropy);
+	memset(&ssl, 0, sizeof(ssl));
+
+	// Check the HTTP status line:
+	AString prefix("HTTP/1.1 200 OK");
+	AString HexDump;
+	if (Response.compare(0, prefix.size(), prefix))
+	{
+		return "ERROR";
+	}
+
+	// Erase the HTTP headers from the response:
+	size_t idxHeadersEnd = Response.find("\r\n\r\n");
+	if (idxHeadersEnd == AString::npos)
+	{
+		return "ERROR";
+	}
+	Response.erase(0, idxHeadersEnd + 4);
+
+	// Parse the Json response:
+	if (Response.empty())
+	{
+		return "ERROR";
+	}
+	Json::Value root;
+	Json::Reader reader;
+	if (!reader.parse(Response, root, false))
+	{
+		return "ERROR";
+	}
+
+	Json::Value Profiles = root.get("profiles", "");
+	AString UUID = (*Profiles.begin()).get("id", "").asString();
+
+	int size = root.get("size", "").asInt();
+	if (size <= 0)
+	{
+		return false;
+	}
+
+	// If the UUID doesn't contain the hashes, insert them at the proper places:
+	if (UUID.size() == 32)
+	{
+		UUID.insert(8, "-");
+		UUID.insert(13, "-");
+		UUID.insert(18, "-");
+		UUID.insert(23, "-");
+	}
+
+	return UUID;
 }
 
 

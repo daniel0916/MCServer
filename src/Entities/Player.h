@@ -380,6 +380,9 @@ public:
 
 	/** Returns wheter the player can fly or not. */
 	virtual bool CanFly(void) const { return m_CanFly; }
+
+	/** Gets Player's UUID from Mojang and returns it */
+	static AString GetUUID(AString a_PlayerName);
 	// tolua_end
 
 	// cEntity overrides:
