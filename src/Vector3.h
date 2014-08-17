@@ -3,7 +3,7 @@
 
 
 
-#define _USE_MATH_DEFINES // Enable non-standard math defines (MSVC)
+#define _USE_MATH_DEFINES  // Enable non-standard math defines (MSVC)
 #include <math.h>
 #include <list>
 #include <vector>
@@ -311,6 +311,15 @@ protected:
 
 };
 // tolua_end
+
+
+
+
+
+template <> inline Vector3<int> Vector3<int>::Floor(void) const
+{
+	return *this;
+}
 
 
 

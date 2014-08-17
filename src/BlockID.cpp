@@ -255,7 +255,8 @@ AString ItemToFullString(const cItem & a_Item)
 
 int StringToMobType(const AString & a_MobString)
 {
-	static struct {
+	static struct
+	{
 		int m_MobType;
 		const char * m_String;
 	} MobMap [] =
@@ -286,7 +287,7 @@ int StringToMobType(const AString & a_MobString)
 		{cMonster::mtMooshroom,    "Mooshroom"},
 		{cMonster::mtSnowGolem,    "SnowGolem"},
 		{cMonster::mtOcelot,       "Ocelot"},
-		{cMonster::mtIronGolem,    "IronGolem"}, 
+		{cMonster::mtIronGolem,    "IronGolem"},
 		{cMonster::mtVillager,     "Villager"},
 	};
 	for (size_t i = 0; i < ARRAYCOUNT(MobMap); i++)
@@ -363,6 +364,7 @@ AString DamageTypeToString(eDamageType a_DamageType)
 		case dtLightning:       return "dtLightning";
 		case dtOnFire:          return "dtOnFire";
 		case dtPoisoning:       return "dtPoisoning";
+		case dtWithering:       return "dtWithering";
 		case dtPotionOfHarming: return "dtPotionOfHarming";
 		case dtRangedAttack:    return "dtRangedAttack";
 		case dtStarving:        return "dtStarving";
@@ -408,6 +410,7 @@ eDamageType StringToDamageType(const AString & a_DamageTypeString)
 		{ dtCactusContact,   "dtCactusContact"},
 		{ dtLavaContact,     "dtLavaContact"},
 		{ dtPoisoning,       "dtPoisoning"},
+		{ dtWithering,       "dtWithering"},
 		{ dtOnFire,          "dtOnFire"},
 		{ dtFireContact,     "dtFireContact"},
 		{ dtInVoid,          "dtInVoid"},
@@ -433,6 +436,7 @@ eDamageType StringToDamageType(const AString & a_DamageTypeString)
 		{ dtCactusContact, "dtCacti"},
 		{ dtLavaContact,   "dtLava"},
 		{ dtPoisoning,     "dtPoison"},
+		{ dtWithering,     "dtWither"},
 		{ dtOnFire,        "dtBurning"},
 		{ dtFireContact,   "dtInFire"},
 		{ dtAdmin,         "dtPlugin"},

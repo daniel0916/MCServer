@@ -31,6 +31,8 @@ function Initialize(Plugin)
 	PM:AddHook(cPluginManager.HOOK_PLUGIN_MESSAGE,               OnPluginMessage);
 	PM:AddHook(cPluginManager.HOOK_PLAYER_JOINED,                OnPlayerJoined);
 	PM:AddHook(cPluginManager.HOOK_PROJECTILE_HIT_BLOCK,         OnProjectileHitBlock);
+	PM:AddHook(cPluginManager.HOOK_CHUNK_UNLOADING,              OnChunkUnloading);
+	PM:AddHook(cPluginManager.HOOK_WORLD_STARTED,                OnWorldStarted);
 
 	-- _X: Disabled so that the normal operation doesn't interfere with anything
 	-- PM:AddHook(cPluginManager.HOOK_CHUNK_GENERATED,              OnChunkGenerated);
@@ -58,9 +60,10 @@ function Initialize(Plugin)
 	PM:BindCommand("/ff",      "debuggers", HandleFurnaceFuel,     "- Shows how long the currently held item would burn in a furnace");
 	PM:BindCommand("/sched",   "debuggers", HandleSched,           "- Schedules a simple countdown using cWorld:ScheduleTask()");
 	PM:BindCommand("/cs",      "debuggers", HandleChunkStay,       "- Tests the ChunkStay Lua integration for the specified chunk coords");
-	PM:BindCommand("/compo",   "debuggers", HandleCompo,           "- Tests the cCompositeChat bindings")
-	PM:BindCommand("/sb",      "debuggers", HandleSetBiome,        "- Sets the biome around you to the specified one")
-	PM:BindCommand("/wesel",   "debuggers", HandleWESel,           "- Expands the current WE selection by 1 block in X/Z")
+	PM:BindCommand("/compo",   "debuggers", HandleCompo,           "- Tests the cCompositeChat bindings");
+	PM:BindCommand("/sb",      "debuggers", HandleSetBiome,        "- Sets the biome around you to the specified one");
+	PM:BindCommand("/wesel",   "debuggers", HandleWESel,           "- Expands the current WE selection by 1 block in X/Z");
+	PM:BindCommand("/rmitem",  "debuggers", HandleRMItem,          "- Remove the specified item from the inventory.");
 
 	Plugin:AddWebTab("Debuggers",  HandleRequest_Debuggers)
 	Plugin:AddWebTab("StressTest", HandleRequest_StressTest)
@@ -531,7 +534,7 @@ function OnTakeDamage(Receiver, TDI)
 	-- Receiver is cPawn
 	-- TDI is TakeDamageInfo
 
-	LOG(Receiver:GetClass() .. " was dealt " .. DamageTypeToString(TDI.DamageType) .. " damage: Raw " .. TDI.RawDamage .. ", Final " .. TDI.FinalDamage .. " (" .. (TDI.RawDamage - TDI.FinalDamage) .. " covered by armor)");
+	-- LOG(Receiver:GetClass() .. " was dealt " .. DamageTypeToString(TDI.DamageType) .. " damage: Raw " .. TDI.RawDamage .. ", Final " .. TDI.FinalDamage .. " (" .. (TDI.RawDamage - TDI.FinalDamage) .. " covered by armor)");
 	return false;
 end
 
@@ -1103,6 +1106,41 @@ end
 
 
 
+function HandleRMItem(a_Split, a_Player)
+	-- Check params:
+	if (a_Split[2] == nil) then
+		a_Player:SendMessage("Usage: /rmitem <Item> [Count]")
+		return true
+	end
+
+	-- Parse the item type:
+	local Item = cItem()
+	if (not StringToItem(a_Split[2], Item)) then
+		a_Player:SendMessageFailure(a_Split[2] .. " isn't a valid item")
+		return true
+	end
+
+	-- Parse the optional item count
+	if (a_Split[3] ~= nil) then
+		local Count = tonumber(a_Split[3])
+		if (Count == nil) then
+			a_Player:SendMessageFailure(a_Split[3] .. " isn't a valid number")
+			return true
+		end
+
+		Item.m_ItemCount = Count
+	end
+
+	-- Remove the item:
+	local NumRemovedItems = a_Player:GetInventory():RemoveItem(Item)
+	a_Player:SendMessageSuccess("Removed " .. NumRemovedItems .. " Items!")
+	return true
+end
+
+
+
+
+
 function HandleRequest_Debuggers(a_Request)
 	local FolderContents = cFile:GetFolderContents("./");
 	return "<p>The following objects have been returned by cFile:GetFolderContents():<ul><li>" .. table.concat(FolderContents, "</li><li>") .. "</li></ul></p>";
@@ -1382,10 +1420,36 @@ end
 
 
 function OnProjectileHitBlock(a_Projectile, a_BlockX, a_BlockY, a_BlockZ, a_BlockFace, a_BlockHitPos)
+	-- Test projectile hooks by setting the blocks they hit on fire:
 	local BlockX, BlockY, BlockZ = AddFaceDirection(a_BlockX, a_BlockY, a_BlockZ, a_BlockFace)
 	local World = a_Projectile:GetWorld()
 	
 	World:SetBlock(BlockX, BlockY, BlockZ, E_BLOCK_FIRE, 0)
+end
+
+
+
+
+
+function OnChunkUnloading(a_World, a_ChunkX, a_ChunkZ)
+	-- Do not let chunk [0, 0] unload, so that it continues ticking [cWorld:SetChunkAlwaysTicked() test]
+	if ((a_ChunkX == 0) and (a_ChunkZ == 0)) then
+		return true
+	end
+end
+
+
+
+
+
+function OnWorldStarted(a_World)
+	-- Make the chunk [0, 0] in every world keep ticking [cWorld:SetChunkAlwaysTicked() test]
+	a_World:ChunkStay({{0, 0}}, nil,
+		function()
+			-- The chunk is loaded, make it always tick:
+			a_World:SetChunkAlwaysTicked(0, 0, true)
+		end
+	)
 end
 
 

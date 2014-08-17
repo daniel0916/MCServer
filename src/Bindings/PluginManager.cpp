@@ -72,7 +72,7 @@ void cPluginManager::FindPlugins(void)
 		{
 			PluginMap::iterator thiz = itr;
 			++thiz;
-			m_Plugins.erase( itr );
+			m_Plugins.erase( itr);
 			itr = thiz;
 			continue;
 		}
@@ -474,6 +474,27 @@ bool cPluginManager::CallHookDisconnect(cClientHandle & a_Client, const AString 
 
 
 
+bool cPluginManager::CallHookEntityAddEffect(cEntity & a_Entity, int a_EffectType, int a_EffectDurationTicks, int a_EffectIntensity, double a_DistanceModifier)
+{
+	HookMap::iterator Plugins = m_Hooks.find(HOOK_ENTITY_ADD_EFFECT);
+	if (Plugins == m_Hooks.end())
+	{
+		return false;
+	}
+	for (PluginList::iterator itr = Plugins->second.begin(); itr != Plugins->second.end(); ++itr)
+	{
+		if ((*itr)->OnEntityAddEffect(a_Entity, a_EffectType, a_EffectDurationTicks, a_EffectIntensity, a_DistanceModifier))
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
+
+
+
+
 bool cPluginManager::CallHookExecuteCommand(cPlayer * a_Player, const AStringVector & a_Split)
 {
 	FIND_HOOK(HOOK_EXECUTE_COMMAND);
@@ -588,14 +609,14 @@ bool cPluginManager::CallHookHopperPushingItem(cWorld & a_World, cHopperEntity &
 
 
 
-bool cPluginManager::CallHookKilling(cEntity & a_Victim, cEntity * a_Killer)
+bool cPluginManager::CallHookKilling(cEntity & a_Victim, cEntity * a_Killer, TakeDamageInfo & a_TDI)
 {
 	FIND_HOOK(HOOK_KILLING);
 	VERIFY_HOOK;
 
 	for (PluginList::iterator itr = Plugins->second.begin(); itr != Plugins->second.end(); ++itr)
 	{
-		if ((*itr)->OnKilling(a_Victim, a_Killer))
+		if ((*itr)->OnKilling(a_Victim, a_Killer, a_TDI))
 		{
 			return true;
 		}
@@ -1411,11 +1432,11 @@ cPluginManager::CommandResult cPluginManager::HandleCommand(cPlayer * a_Player, 
 
 
 
-cPlugin * cPluginManager::GetPlugin( const AString & a_Plugin ) const
+cPlugin * cPluginManager::GetPlugin( const AString & a_Plugin) const
 {
-	for( PluginMap::const_iterator itr = m_Plugins.begin(); itr != m_Plugins.end(); ++itr )
+	for (PluginMap::const_iterator itr = m_Plugins.begin(); itr != m_Plugins.end(); ++itr)
 	{
-		if (itr->second == NULL ) continue;
+		if (itr->second == NULL) continue;
 		if (itr->second->GetName().compare(a_Plugin) == 0)
 		{
 			return itr->second;
@@ -1465,7 +1486,7 @@ bool cPluginManager::DisablePlugin(const AString & a_PluginName)
 	if (itr->first.compare(a_PluginName) == 0)  // _X 2013_02_01: wtf? Isn't this supposed to be what find() does?
 	{
 		m_DisablePluginList.push_back(itr->second);
-		itr->second = NULL;	// Get rid of this thing right away
+		itr->second = NULL;  // Get rid of this thing right away
 		return true;
 	}
 	return false;

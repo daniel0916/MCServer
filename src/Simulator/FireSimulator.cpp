@@ -63,7 +63,7 @@ static const struct
 
 
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 // cFireSimulator:
 
 cFireSimulator::cFireSimulator(cWorld & a_World, cIniFile & a_IniFile) :
@@ -98,7 +98,7 @@ void cFireSimulator::SimulateChunk(float a_Dt, int a_ChunkX, int a_ChunkZ, cChun
 		int x = itr->x;
 		int y = itr->y;
 		int z = itr->z;
-		BLOCKTYPE BlockType = a_Chunk->GetBlock(x,y,z);
+		BLOCKTYPE BlockType = a_Chunk->GetBlock(x, y, z);
 
 		if (!IsAllowedBlock(BlockType))
 		{
@@ -140,7 +140,7 @@ void cFireSimulator::SimulateChunk(float a_Dt, int a_ChunkX, int a_ChunkZ, cChun
 			continue;
 		}
 
-		if((itr->y > 0) && (!DoesBurnForever(a_Chunk->GetBlock(itr->x, itr->y - 1, itr->z))))
+		if ((itr->y > 0) && (!DoesBurnForever(a_Chunk->GetBlock(itr->x, itr->y - 1, itr->z))))
 		{
 			a_Chunk->SetMeta(x, y, z, BlockMeta + 1);
 		}
@@ -306,14 +306,14 @@ void cFireSimulator::TrySpreadFire(cChunk * a_Chunk, int a_RelX, int a_RelY, int
 				// No need to check the coords for equality with the parent block,
 				// it cannot catch fire anyway (because it's not an air block)
 				
-				if (m_World.GetTickRandomNumber(MAX_CHANCE_FLAMMABILITY) > m_Flammability) 
+				if (m_World.GetTickRandomNumber(MAX_CHANCE_FLAMMABILITY) > m_Flammability)
 				{
 					continue;
 				}
 				
 				// Start the fire in the neighbor {x, y, z}
 				/*
-				FLOG("FS: Trying to start fire at {%d, %d, %d}.", 
+				FLOG("FS: Trying to start fire at {%d, %d, %d}.",
 					x + a_Chunk->GetPosX() * cChunkDef::Width, y, z + a_Chunk->GetPosZ() * cChunkDef::Width
 				);
 				*/

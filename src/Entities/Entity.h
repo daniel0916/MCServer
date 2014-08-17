@@ -158,6 +158,7 @@ public:
 	bool IsPlayer      (void) const { return (m_EntityType == etPlayer);       }
 	bool IsPickup      (void) const { return (m_EntityType == etPickup);       }
 	bool IsMob         (void) const { return (m_EntityType == etMonster);      }
+	bool IsPawn        (void) const { return (IsMob() || IsPlayer());          }
 	bool IsFallingBlock(void) const { return (m_EntityType == etFallingBlock); }
 	bool IsMinecart    (void) const { return (m_EntityType == etMinecart);     }
 	bool IsBoat        (void) const { return (m_EntityType == etBoat);         }
@@ -309,13 +310,13 @@ public:
 	virtual cItem GetEquippedBoots(void) const { return cItem(); }
 
 	/// Called when the health drops below zero. a_Killer may be NULL (environmental damage)
-	virtual void KilledBy(cEntity * a_Killer);
+	virtual void KilledBy(TakeDamageInfo & a_TDI);
 
 	/// Called when the entity kills another entity
 	virtual void Killed(cEntity * a_Victim) {}
 
 	/// Heals the specified amount of HPs
-	void Heal(int a_HitPoints);
+	virtual void Heal(int a_HitPoints);
 	
 	/// Returns the health of this entity
 	int GetHealth(void) const { return m_Health; }
@@ -415,6 +416,9 @@ public:
 	/** Gets remaining air of a monster */
 	int GetAirLevel(void) const { return m_AirLevel; }
 
+	/** Gets number of ticks this entity has existed for */
+	long int GetTicksAlive(void) const { return m_TicksAlive; }
+	
 	/** Gets the invulnerable ticks from the entity */
 	int GetInvulnerableTicks(void) const { return m_InvulnerableTicks; }
 
@@ -427,7 +431,7 @@ public:
 	virtual void OnRightClicked(cPlayer &) {};
 
 	/// Returns the list of drops for this pawn when it is killed. May check a_Killer for special handling (sword of looting etc.). Called from KilledBy().
-	virtual void GetDrops(cItems & a_Drops, cEntity * a_Killer = NULL) 
+	virtual void GetDrops(cItems & a_Drops, cEntity * a_Killer = NULL)
 	{
 		UNUSED(a_Drops);
 		UNUSED(a_Killer);
@@ -484,7 +488,7 @@ protected:
 	
 	/// Whether the entity is capable of taking fire or lava damage.
 	bool m_IsFireproof;
-    
+
 	/// Time, in ticks, since the last damage dealt by being on fire. Valid only if on fire (IsOnFire())
 	int m_TicksSinceLastBurnDamage;
 	
@@ -505,7 +509,7 @@ protected:
 	overrides can provide further processing, such as forcing players to move at the given speed. */
 	virtual void DoSetSpeed(double a_SpeedX, double a_SpeedY, double a_SpeedZ);
 	
-	virtual void Destroyed(void) {} // Called after the entity has been destroyed
+	virtual void Destroyed(void) {}  // Called after the entity has been destroyed
 
 	/** Called in each tick to handle air-related processing i.e. drowning */
 	virtual void HandleAir(void);
@@ -519,6 +523,9 @@ protected:
 	/** Air level of a mobile */
 	int m_AirLevel;
 	int m_AirTickTimer;
+	
+	/** The number of ticks this entity has been alive for */
+	long int m_TicksAlive;
 	
 private:
 	/** Measured in degrees, [-180, +180) */

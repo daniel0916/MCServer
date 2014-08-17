@@ -19,6 +19,7 @@
 #include "ItemCloth.h"
 #include "ItemComparator.h"
 #include "ItemDoor.h"
+#include "ItemMilk.h"
 #include "ItemDye.h"
 #include "ItemEmptyMap.h"
 #include "ItemFishingRod.h"
@@ -34,6 +35,7 @@
 #include "ItemNetherWart.h"
 #include "ItemPainting.h"
 #include "ItemPickaxe.h"
+#include "ItemPotion.h"
 #include "ItemThrowable.h"
 #include "ItemRedstoneDust.h"
 #include "ItemRedstoneRepeater.h"
@@ -92,7 +94,7 @@ cItemHandler * cItemHandler::GetItemHandler(int a_ItemType)
 
 cItemHandler *cItemHandler::CreateItemHandler(int a_ItemType)
 {
-	switch(a_ItemType)
+	switch (a_ItemType)
 	{
 		default:                       return new cItemHandler(a_ItemType);
 		
@@ -120,9 +122,11 @@ cItemHandler *cItemHandler::CreateItemHandler(int a_ItemType)
 		case E_ITEM_FLOWER_POT:        return new cItemFlowerPotHandler(a_ItemType);
 		case E_BLOCK_LILY_PAD:         return new cItemLilypadHandler(a_ItemType);
 		case E_ITEM_MAP:               return new cItemMapHandler();
+		case E_ITEM_MILK:              return new cItemMilkHandler();
 		case E_ITEM_ITEM_FRAME:        return new cItemItemFrameHandler(a_ItemType);
 		case E_ITEM_NETHER_WART:       return new cItemNetherWartHandler(a_ItemType);
 		case E_ITEM_PAINTING:          return new cItemPaintingHandler(a_ItemType);
+		case E_ITEM_POTIONS:           return new cItemPotionHandler();
 		case E_ITEM_REDSTONE_DUST:     return new cItemRedstoneDustHandler(a_ItemType);
 		case E_ITEM_REDSTONE_REPEATER: return new cItemRedstoneRepeaterHandler(a_ItemType);
 		case E_ITEM_SHEARS:            return new cItemShearsHandler(a_ItemType);
@@ -259,7 +263,7 @@ cItemHandler *cItemHandler::CreateItemHandler(int a_ItemType)
 
 void cItemHandler::Deinit()
 {
-	for(int i = 0; i < 2267; i++)
+	for (int i = 0; i < 2267; i++)
 	{
 		delete m_ItemHandler[i];
 		m_ItemHandler[i] = NULL;
@@ -324,12 +328,9 @@ void cItemHandler::OnBlockDestroyed(cWorld * a_World, cPlayer * a_Player, const 
 
 	if (a_Player->IsGameModeSurvival())
 	{
-		if (!BlockRequiresSpecialTool(Block) || CanHarvestBlock(Block))
-		{
-			cChunkInterface ChunkInterface(a_World->GetChunkMap());
-			cBlockInServerPluginInterface PluginInterface(*a_World);
-			Handler->DropBlock(ChunkInterface, *a_World, PluginInterface, a_Player, a_BlockX, a_BlockY, a_BlockZ);
-		}
+		cChunkInterface ChunkInterface(a_World->GetChunkMap());
+		cBlockInServerPluginInterface PluginInterface(*a_World);
+		Handler->DropBlock(ChunkInterface, *a_World, PluginInterface, a_Player, a_BlockX, a_BlockY, a_BlockZ, CanHarvestBlock(Block));
 	}
 	
 	a_Player->UseEquippedItem();
@@ -358,7 +359,7 @@ char cItemHandler::GetMaxStackSize(void)
 		return 64;
 	}
 	
-	switch (m_ItemType) //sorted by id
+	switch (m_ItemType)
 	{
 		case E_ITEM_ARROW:                return 64;
 		case E_ITEM_BAKED_POTATO:         return 64;
@@ -454,14 +455,14 @@ char cItemHandler::GetMaxStackSize(void)
 bool cItemHandler::IsTool()
 {
 	// TODO: Rewrite this to list all tools specifically
-	return 
-		   (m_ItemType >= 256 && m_ItemType <= 259)
-		|| (m_ItemType == 261)
-		|| (m_ItemType >= 267 && m_ItemType <= 279)
-		|| (m_ItemType >= 283 && m_ItemType <= 286)
-		|| (m_ItemType >= 290 && m_ItemType <= 294)
-		|| (m_ItemType == 325)
-		|| (m_ItemType == 346);
+	return
+		((m_ItemType >= 256) && (m_ItemType <= 259)) ||
+		(m_ItemType == 261) ||
+		((m_ItemType >= 267) && (m_ItemType <= 279)) ||
+		((m_ItemType >= 283) && (m_ItemType <= 286)) ||
+		((m_ItemType >= 290) && (m_ItemType <= 294)) ||
+		(m_ItemType == 325) ||
+		(m_ItemType == 346);
 }
 
 
@@ -470,33 +471,17 @@ bool cItemHandler::IsTool()
 
 bool cItemHandler::IsFood(void)
 {
-	switch (m_ItemType)
-	{
-		case E_ITEM_RED_APPLE:
-		case E_ITEM_GOLDEN_APPLE:
-		case E_ITEM_MUSHROOM_SOUP:
-		case E_ITEM_BREAD:
-		case E_ITEM_RAW_PORKCHOP:
-		case E_ITEM_COOKED_PORKCHOP:
-		case E_ITEM_MILK:
-		case E_ITEM_RAW_FISH:
-		case E_ITEM_COOKED_FISH:
-		case E_ITEM_COOKIE:
-		case E_ITEM_MELON_SLICE:
-		case E_ITEM_RAW_BEEF:
-		case E_ITEM_STEAK:
-		case E_ITEM_RAW_CHICKEN:
-		case E_ITEM_COOKED_CHICKEN:
-		case E_ITEM_ROTTEN_FLESH:
-		case E_ITEM_SPIDER_EYE:
-		case E_ITEM_CARROT:
-		case E_ITEM_POTATO:
-		case E_ITEM_BAKED_POTATO:
-		case E_ITEM_POISONOUS_POTATO:
-		{
-			return true;
-		}
-	}  // switch (m_ItemType)
+	return false;
+}
+
+
+
+
+
+bool cItemHandler::IsDrinkable(short a_ItemDamage)
+{
+	UNUSED(a_ItemDamage);
+	
 	return false;
 }
 
@@ -537,7 +522,7 @@ bool cItemHandler::CanHarvestBlock(BLOCKTYPE a_BlockType)
 
 bool cItemHandler::GetPlacementBlockTypeMeta(
 	cWorld * a_World, cPlayer * a_Player,
-	int a_BlockX, int a_BlockY, int a_BlockZ, eBlockFace a_BlockFace, 
+	int a_BlockX, int a_BlockY, int a_BlockZ, eBlockFace a_BlockFace,
 	int a_CursorX, int a_CursorY, int a_CursorZ,
 	BLOCKTYPE & a_BlockType, NIBBLETYPE & a_BlockMeta
 )
@@ -554,7 +539,7 @@ bool cItemHandler::GetPlacementBlockTypeMeta(
 	cChunkInterface ChunkInterface(a_World->GetChunkMap());
 	return BlockH->GetPlacementBlockTypeMeta(
 		ChunkInterface, a_Player,
-		a_BlockX, a_BlockY, a_BlockZ, a_BlockFace, 
+		a_BlockX, a_BlockY, a_BlockZ, a_BlockFace,
 		a_CursorX, a_CursorY, a_CursorZ,
 		a_BlockType, a_BlockMeta
 	);
@@ -580,7 +565,7 @@ bool cItemHandler::EatItem(cPlayer * a_Player, cItem * a_Item)
 			cFastRandom r1;
 			if ((r1.NextInt(100, a_Player->GetUniqueID()) - Info.PoisonChance) <= 0)
 			{
-				a_Player->FoodPoison(300);
+				a_Player->FoodPoison(600);  // Give the player food poisoning for 30 seconds.
 			}
 		}
 

@@ -18,7 +18,7 @@ public:
 	
 	virtual bool GetPlacementBlockTypeMeta(
 		cChunkInterface & a_ChunkInterface, cPlayer * a_Player,
-		int a_BlockX, int a_BlockY, int a_BlockZ, eBlockFace a_BlockFace, 
+		int a_BlockX, int a_BlockY, int a_BlockZ, eBlockFace a_BlockFace,
 		int a_CursorX, int a_CursorY, int a_CursorZ,
 		BLOCKTYPE & a_BlockType, NIBBLETYPE & a_BlockMeta
 	) override
@@ -59,7 +59,7 @@ public:
 
 	static char MetaDataToDirection(NIBBLETYPE a_MetaData)
 	{
-		switch(a_MetaData)
+		switch (a_MetaData)
 		{
 			case 0x1: return BLOCK_FACE_NORTH;
 			case 0x4: return BLOCK_FACE_SOUTH;
